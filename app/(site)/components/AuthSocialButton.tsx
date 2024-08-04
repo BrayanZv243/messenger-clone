@@ -14,7 +14,6 @@ const AuthSocialButton: React.FC<AuthSocialButtonProps> = ({
     onClick,
     disabled,
 }) => {
-    console.log(disabled);
     return (
         <button
             type="button"
