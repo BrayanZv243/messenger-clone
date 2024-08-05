@@ -3,8 +3,13 @@
 import useConversation from "@/app/hooks/useConversation";
 import useRoutes from "@/app/hooks/useRoutes";
 import MobileItem from "./MobileItem";
+import { User } from "@prisma/client";
 
-const MobileFooter = () => {
+interface MobileFooterProps {
+    currentUser: User;
+}
+
+const MobileFooter = ({ currentUser }: MobileFooterProps) => {
     const routes = useRoutes();
     const { isOpen } = useConversation();
 
