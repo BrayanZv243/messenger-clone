@@ -19,7 +19,7 @@ const UserBox = ({ data }: UserBoxProps) => {
         setIsLoading(true);
 
         axios
-            .post("/api/converstions", {
+            .post("/api/conversations", {
                 userId: data.id,
             })
             .then((data) => {
