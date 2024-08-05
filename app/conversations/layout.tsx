@@ -1,4 +1,3 @@
-import { Conversation } from "@prisma/client";
 import getConversations from "../actions/getConversations";
 import Sidebar from "../components/sidebar/Sidebar";
 import ConversationList from "./components/ConversationList";
