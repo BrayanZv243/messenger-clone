@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineGroupAdd } from "react-icons/md";
 import ConversationBox from "./ConversationBox";
+import { Hint } from "@/app/components/Hint";
 
 interface ConversationListProps {
     initialItems: FullConversationType[];
@@ -30,9 +31,11 @@ const ConversationList = ({ initialItems }: ConversationListProps) => {
                     <div className="text-2xl font-bold text-neutral-800">
                         Messages
                     </div>
-                    <div className="rounded-full p-2 bg-gray-100 text-gray-600 cursor-pointer hover:opacity-75 transition">
-                        <MdOutlineGroupAdd size={20} />
-                    </div>
+                    <Hint label="Create a group" side="right">
+                        <div className="rounded-full p-2 bg-gray-100 text-gray-600 cursor-pointer hover:opacity-75 transition">
+                            <MdOutlineGroupAdd size={20} />
+                        </div>
+                    </Hint>
                 </div>
                 {items.map((item) => (
                     <ConversationBox
