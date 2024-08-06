@@ -1,7 +1,6 @@
 import prisma from "@/app/libs/prismadb";
-import { Message } from "@prisma/client";
 
-const getMessages = async (conversationId: string): Promise<Message[]> => {
+const getMessages = async (conversationId: string) => {
     try {
         const messages = await prisma.message.findMany({
             where: {
