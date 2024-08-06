@@ -31,7 +31,7 @@ const ConversationList = ({ initialItems }: ConversationListProps) => {
                     <p className="text-2xl font-bold text-neutral-800">
                         Messages
                     </p>
-                    <Hint label="Create a group" side="right">
+                    <Hint label="Create a group" side="bottom">
                         <div className="rounded-full p-2 bg-gray-100 text-gray-600 cursor-pointer hover:opacity-75 transition">
                             <MdOutlineGroupAdd size={20} />
                         </div>
