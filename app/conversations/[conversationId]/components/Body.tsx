@@ -2,10 +2,11 @@
 
 import useConversation from "@/app/hooks/useConversation";
 import { FullMessageType } from "@/app/types";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MessageBox from "./MessageBox";
 import { useSession } from "next-auth/react";
 import Loading from "./Loading";
+import axios from "axios";
 
 interface BodyProps {
     initialMessages: FullMessageType[];
@@ -17,6 +18,10 @@ const Body = ({ initialMessages }: BodyProps) => {
     const bottomRef = useRef<HTMLDivElement>(null);
 
     const { conversationId } = useConversation();
+
+    useEffect(() => {
+        axios.post(`/api/conversations/${conversationId}/seen`);
+    }, [conversationId]);
 
     if (!session.data) return <Loading />;
 
