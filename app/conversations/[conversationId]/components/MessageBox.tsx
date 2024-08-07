@@ -24,7 +24,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     const container = clsx(`flex gap-3 p-4`, isOwn && "justify-end");
     const avatar = clsx(isOwn && "order-2");
 
-    const body = clsx("flex flex-col gap-2", isOwn && "items-end");
+    const body = clsx("flex flex-col gap-0 -mt-[16px]", isOwn && "items-end");
 
     const message = clsx(
         "text-sm w-fit overflow-hidden",

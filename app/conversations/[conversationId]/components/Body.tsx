@@ -20,6 +20,10 @@ const Body = ({ initialMessages }: BodyProps) => {
     const { conversationId } = useConversation();
 
     useEffect(() => {
+        bottomRef.current?.scrollIntoView();
+    }, [session, bottomRef]);
+
+    useEffect(() => {
         axios.post(`/api/conversations/${conversationId}/seen`);
     }, [conversationId]);
 
@@ -34,7 +38,7 @@ const Body = ({ initialMessages }: BodyProps) => {
                     data={message}
                 />
             ))}
-            <div ref={bottomRef} className="pt-24" />
+            <div ref={bottomRef} className="pt-2" />
         </div>
     );
 };
