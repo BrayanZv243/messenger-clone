@@ -30,7 +30,7 @@ const Body = ({ initialMessages }: BodyProps) => {
         };
 
         bottomRef.current?.addEventListener("scroll", handleScroll);
-    }, [bottomRef.current]);
+    }, [bottomRef.current, messages]);
 
     useEffect(() => {
         if (bottomRef.current) {
