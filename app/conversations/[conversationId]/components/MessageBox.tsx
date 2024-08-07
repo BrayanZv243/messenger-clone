@@ -2,6 +2,7 @@
 
 import Avatar from "@/app/components/Avatar";
 import { FullMessageType } from "@/app/types";
+import UserAvatarDefault from "@/components/UserAvatarDefault";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
@@ -35,7 +36,11 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     return (
         <div className={container}>
             <div className={avatar}>
-                <Avatar user={data.sender} />
+                {data.sender.image ? (
+                    <Avatar user={data.sender} />
+                ) : (
+                    <UserAvatarDefault name={data.sender.name!} />
+                )}
             </div>
             <div className={body}>
                 <div className="flex items-center gap-1">

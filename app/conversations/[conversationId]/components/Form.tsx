@@ -44,7 +44,10 @@ const Form = () => {
                 onSuccess={handleUpload}
                 uploadPreset="cjsiejih"
             >
-                <HiPhoto size={30} className="text-sky-500" />
+                <HiPhoto
+                    size={30}
+                    className="text-sky-500 hover:text-sky-600 transition"
+                />
             </CldUploadButton>
             <form
                 onSubmit={handleSubmit(onSubmit)}
