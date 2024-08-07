@@ -8,6 +8,8 @@ import { useState } from "react";
 import { MdOutlineGroupAdd } from "react-icons/md";
 import ConversationBox from "./ConversationBox";
 import { Hint } from "@/app/components/Hint";
+import { useSession } from "next-auth/react";
+import Loading from "../[conversationId]/components/Loading";
 
 interface ConversationListProps {
     initialItems: FullConversationType[];
@@ -15,6 +17,7 @@ interface ConversationListProps {
 
 const ConversationList = ({ initialItems }: ConversationListProps) => {
     const [items, setItems] = useState(initialItems);
+    const session = useSession();
 
     const router = useRouter();
 
@@ -22,8 +25,9 @@ const ConversationList = ({ initialItems }: ConversationListProps) => {
     return (
         <aside
             className={clsx(
-                `fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200`,
-                isOpen ? "hidden" : "block w-full left-0"
+                `fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block border-r border-gray-200`,
+                isOpen ? "hidden" : "block w-full left-0",
+                session.data && "overflow-y-auto"
             )}
         >
             <div className="px-5">
@@ -37,13 +41,20 @@ const ConversationList = ({ initialItems }: ConversationListProps) => {
                         </div>
                     </Hint>
                 </div>
-                {items.map((item) => (
-                    <ConversationBox
-                        key={item.id}
-                        data={item}
-                        selected={conversationId === item.id}
-                    />
-                ))}
+                {session.data ? (
+                    items.map((item) => (
+                        <ConversationBox
+                            key={item.id}
+                            data={item}
+                            selected={conversationId === item.id}
+                        />
+                    ))
+                ) : (
+                    <div className="-mt-16">
+                        {/* Render Conversations Skeleton */}
+                        <Loading />
+                    </div>
+                )}
             </div>
         </aside>
     );

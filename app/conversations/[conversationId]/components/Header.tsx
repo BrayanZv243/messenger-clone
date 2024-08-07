@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { HiChevronLeft, HiEllipsisHorizontal } from "react-icons/hi2";
 import ProfileDrawer from "./ProfileDrawer";
+import { useSession } from "next-auth/react";
 
 interface HeaderProps {
     conversation: Conversation & {
@@ -17,12 +18,16 @@ interface HeaderProps {
 const Header = ({ conversation }: HeaderProps) => {
     const otherUser = useOtherUser(conversation);
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const session = useSession();
 
     const statusText = useMemo(() => {
         if (conversation.isGroup) return `${conversation.users.length} members`;
 
         return "Active";
     }, [conversation]);
+
+    // Render Header Skeleton
+    if (!session.data) return;
 
     return (
         <>

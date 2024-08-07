@@ -43,6 +43,7 @@ const Body = ({ initialMessages }: BodyProps) => {
         axios.post(`/api/conversations/${conversationId}/seen`);
     }, [conversationId]);
 
+    // Render Body Messages Skeleton
     if (!session.data) return <Loading />;
 
     return (

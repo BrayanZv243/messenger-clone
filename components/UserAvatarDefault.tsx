@@ -1,13 +1,17 @@
 "use client";
 
 import { getInitialsColor } from "@/app/actions/getRandomColorUserAvatar";
+import { useMemo } from "react";
 
 interface UserProps {
     name: string;
 }
 
 const UserAvatarDefault = ({ name }: UserProps) => {
-    const { backgroundColor, initials } = getInitialsColor(name);
+    const { backgroundColor, initials } = useMemo(
+        () => getInitialsColor(name),
+        [name]
+    );
 
     return (
         <div className="flex items-center">
