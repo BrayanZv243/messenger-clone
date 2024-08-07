@@ -20,8 +20,24 @@ const Body = ({ initialMessages }: BodyProps) => {
     const { conversationId } = useConversation();
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView();
-    }, [session, bottomRef]);
+        const handleScroll = () => {
+            if (bottomRef.current) {
+                localStorage.setItem(
+                    conversationId,
+                    bottomRef.current.scrollTop.toString()
+                );
+            }
+        };
+
+        bottomRef.current?.addEventListener("scroll", handleScroll);
+    }, [bottomRef.current]);
+
+    useEffect(() => {
+        if (bottomRef.current) {
+            const scrollPosition = localStorage.getItem(conversationId) || "0";
+            bottomRef.current.scrollTop = parseFloat(scrollPosition);
+        }
+    }, [session, messages, conversationId]);
 
     useEffect(() => {
         axios.post(`/api/conversations/${conversationId}/seen`);
@@ -30,7 +46,7 @@ const Body = ({ initialMessages }: BodyProps) => {
     if (!session.data) return <Loading />;
 
     return (
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto" ref={bottomRef}>
             {messages.map((message, i) => (
                 <MessageBox
                     isLast={i === messages.length - 1}
@@ -38,7 +54,7 @@ const Body = ({ initialMessages }: BodyProps) => {
                     data={message}
                 />
             ))}
-            <div ref={bottomRef} className="pt-2" />
+            <div className="pt-2" />
         </div>
     );
 };

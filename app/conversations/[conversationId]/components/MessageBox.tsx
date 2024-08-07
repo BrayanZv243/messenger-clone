@@ -50,10 +50,10 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                     {data.image ? (
                         <Image
                             alt="Image"
-                            height="228"
-                            width="228"
+                            height={228}
+                            width={228}
                             src={data.image}
-                            className="object-cover cursor-pointer hover:scale-125 transition translate"
+                            className="object-cover cursor-pointer hover:scale-125 transition translate w-auto h-auto"
                         />
                     ) : (
                         <div>{data.body}</div>
