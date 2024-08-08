@@ -49,10 +49,9 @@ const Form = () => {
     };
 
     const handleUpload = (result: any) => {
-        const format = result?.info.format;
         const originalName: string = truncateFileName(
             result?.info.original_filename,
-            format
+            result?.info.format
         );
 
         setFilename(originalName);
@@ -85,7 +84,7 @@ const Form = () => {
                                 className="w-auto h-36 object-contain rounded-md bg-gray-100 border-4 border-solid border-gray-300/100"
                             />
                             <div className="absolute w-auto h-auto -bottom-6 lg:-bottom-5 rounded-lsm -left-1">
-                                <p className="text-xs font-normal p-0.5 truncate">
+                                <p className="text-xs xl:text-base font-semibold text-gray-900 p-0.5 truncate">
                                     {filename}
                                 </p>
                             </div>
