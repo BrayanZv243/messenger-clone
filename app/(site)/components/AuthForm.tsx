@@ -58,13 +58,19 @@ const AuthForm = () => {
                 redirect: false,
             })
                 .then((callback) => {
-                    if (callback?.error) toast.error("Invalid Credentials");
+                    if (callback?.error) {
+                        toast.error("Invalid Credentials");
+                        setIsLoading(false);
+                    }
                     if (callback?.ok && !callback?.error) {
-                        toast.success("Logged In!");
                         router.push("/users");
+                        toast.success("Logged In!");
                     }
                 })
-                .finally(() => setIsLoading(false));
+                .catch(() => {
+                    toast.error("Something went Wrong");
+                    setIsLoading(false);
+                });
         }
     };
 
