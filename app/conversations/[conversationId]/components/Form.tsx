@@ -36,11 +36,12 @@ const Form = () => {
             });
             setImageData(null);
         }
-
-        axios.post("/api/messages", {
-            ...data,
-            conversationId,
-        });
+        if (data.message) {
+            axios.post("/api/messages", {
+                ...data,
+                conversationId,
+            });
+        }
     };
 
     const handleUpload = (result: any) => {
@@ -85,13 +86,22 @@ const Form = () => {
                     onSubmit={handleSubmit(onSubmit)}
                     className="flex items-center gap-2 lg:gap-4 w-full"
                 >
-                    <MessageInput
-                        id="message"
-                        register={register}
-                        errors={errors}
-                        required
-                        placeholder="Write a message"
-                    />
+                    {imageData ? (
+                        <MessageInput
+                            id="message"
+                            register={register}
+                            errors={errors}
+                            placeholder="Write a message"
+                        />
+                    ) : (
+                        <MessageInput
+                            id="message"
+                            register={register}
+                            errors={errors}
+                            required
+                            placeholder="Write a message"
+                        />
+                    )}
                     <ButtonSend
                         size={18}
                         className="text-white"
