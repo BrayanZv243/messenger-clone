@@ -38,7 +38,7 @@ const Body = ({ initialMessages }: BodyProps) => {
             setTimeout(() => {
                 bottomRef.current?.scrollTo({
                     top: parseFloat(scrollPosition),
-                    behavior: "smooth", // Optional: to animate the scroll
+                    behavior: "smooth",
                 });
             }, 100);
         }
