@@ -30,12 +30,17 @@ const Body = ({ initialMessages }: BodyProps) => {
         };
 
         bottomRef.current?.addEventListener("scroll", handleScroll);
-    }, [bottomRef.current, messages]);
+    }, [session, conversationId]);
 
     useEffect(() => {
         if (bottomRef.current) {
             const scrollPosition = localStorage.getItem(conversationId) || "0";
-            bottomRef.current.scrollTop = parseFloat(scrollPosition);
+            setTimeout(() => {
+                bottomRef.current?.scrollTo({
+                    top: parseFloat(scrollPosition),
+                    behavior: "smooth", // Optional: to animate the scroll
+                });
+            }, 100);
         }
     }, [session, messages, conversationId]);
 
