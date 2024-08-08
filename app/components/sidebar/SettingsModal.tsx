@@ -11,6 +11,7 @@ import Input from "../inputs/Input";
 import Image from "next/image";
 import Avatar from "../Avatar";
 import { CldUploadButton } from "next-cloudinary";
+import Button from "../Button";
 
 interface SettingsModalProps {
     currentUser: User;
@@ -53,6 +54,7 @@ const SettingsModal = ({
             .then(() => {
                 router.refresh();
                 onClose();
+                toast.success("Profile updated successfully");
             })
             .catch(() => toast.error("Something went wrong"))
             .finally(() => setIsLoading(false));
@@ -61,8 +63,8 @@ const SettingsModal = ({
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
             <form onSubmit={handleSubmit(onSubmit)}>
-                <div className="space-y-12">
-                    <div className="border-b border-gray-900/10 pb-12">
+                <div className="space-y-3 ">
+                    <div className="border-b border-gray-900/20 pb-4">
                         <h2 className="text-base font-semibold leading-7 text-gray-900">
                             Profile
                         </h2>
@@ -87,7 +89,7 @@ const SettingsModal = ({
                                 <Image
                                     width="48"
                                     height="48"
-                                    className="rounded-full"
+                                    className="rounded-full object-cover h-14 w-14"
                                     src={image || currentUser?.image}
                                     alt="Avatar"
                                 />
@@ -98,8 +100,29 @@ const SettingsModal = ({
                                 options={{ maxFiles: 1 }}
                                 onSuccess={handleUpload}
                                 uploadPreset="cjsiejih"
-                            ></CldUploadButton>
+                            >
+                                <Button
+                                    disabled={isLoading}
+                                    secondary
+                                    type="button"
+                                >
+                                    Change
+                                </Button>
+                            </CldUploadButton>
                         </div>
+                    </div>
+                    <div className="flex items-center justify-end gap-x-6 ">
+                        <Button
+                            disabled={isLoading}
+                            secondary
+                            onClick={onClose}
+                            type="button"
+                        >
+                            Cancel
+                        </Button>
+                        <Button disabled={isLoading} type="submit">
+                            Save
+                        </Button>
                     </div>
                 </div>
             </form>
