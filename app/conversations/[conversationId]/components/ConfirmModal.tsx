@@ -31,7 +31,7 @@ const ConfirmModal = ({ isOpen, onClose }: ConfirmModalProps) => {
                 setIsLoading(false);
             })
             .catch(() => toast.error("Something went wrong"));
-    }, []);
+    }, [conversationId, onClose, router]);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
