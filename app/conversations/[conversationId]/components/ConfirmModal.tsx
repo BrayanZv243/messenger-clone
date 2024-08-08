@@ -6,7 +6,7 @@ import useConversation from "@/app/hooks/useConversation";
 import { DialogTitle } from "@headlessui/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useCallback, useTransition } from "react";
+import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 import { FiAlertTriangle } from "react-icons/fi";
 
@@ -18,20 +18,20 @@ interface ConfirmModalProps {
 const ConfirmModal = ({ isOpen, onClose }: ConfirmModalProps) => {
     const router = useRouter();
     const { conversationId } = useConversation();
-    const [isPending, startTransition] = useTransition();
+    const [isLoading, setIsLoading] = useState(false);
 
     const onDelete = useCallback(() => {
-        startTransition(() => {
-            axios
-                .delete(`/api/conversations/${conversationId}`)
-                .then(() => {
-                    onClose();
-                    router.push("/conversations");
-                    router.refresh();
-                })
-                .catch(() => toast.error("Something went wrong"));
-        });
-    }, [conversationId, router, onClose]);
+        setIsLoading(true);
+        axios
+            .delete(`/api/conversations/${conversationId}`)
+            .then(() => {
+                onClose();
+                router.push("/conversations");
+                router.refresh();
+                setIsLoading(false);
+            })
+            .catch(() => toast.error("Something went wrong"));
+    }, []);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose}>
@@ -55,10 +55,10 @@ const ConfirmModal = ({ isOpen, onClose }: ConfirmModalProps) => {
                 </div>
             </div>
             <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                <Button disabled={isPending} danger onClick={onDelete}>
+                <Button disabled={isLoading} danger onClick={onDelete}>
                     Delete
                 </Button>
-                <Button disabled={isPending} secondary onClick={onClose}>
+                <Button disabled={isLoading} secondary onClick={onClose}>
                     Cancel
                 </Button>
             </div>
