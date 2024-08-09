@@ -24,12 +24,8 @@ const MobileItem: React.FC<MobileItemProps> = ({
 
     const handleClick = async () => {
         if (onClick) {
-            if (label === "Logout") {
-                setLoading(true);
-                onClick();
-            } else {
-                onClick();
-            }
+            if (label === "Logout") setLoading(true);
+            onClick();
         }
     };
 
