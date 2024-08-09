@@ -70,6 +70,29 @@ const Form = () => {
         return fullFilename;
     };
 
+    const deleteImage = async (publicId: string) => {
+        try {
+            await axios.delete("/api/delete-image", {
+                data: { publicId },
+            });
+            console.log("Image deleted successfully");
+        } catch (error) {
+            console.error("Error deleting image:", error);
+        }
+    };
+
+    const handleDelete = () => {
+        const publicId = extractPublicIdFromUrl(imageData!);
+        deleteImage(publicId);
+        setImageData(null);
+    };
+
+    const extractPublicIdFromUrl = (url: string) => {
+        const parts = url.split("/");
+        const lastPart = parts.pop()!.split(".");
+        return lastPart[0];
+    };
+
     return (
         <div className="py-4 px-4 bg-white border-t flex flex-col items-center gap-2 lg:gap-4 w-full sm:overflow-auto">
             {imageData && (
@@ -89,7 +112,7 @@ const Form = () => {
                                 <div className="absolute -top-2 -right-1 cursor-pointer rounded-md p-0.5 bg-gray-400/75 shadow-lg shadow-gray-600">
                                     <IoTrash
                                         className="text-red-700 hover:text-red-800 transition"
-                                        onClick={() => setImageData(null)}
+                                        onClick={handleDelete}
                                     />
                                 </div>
                             </Hint>

@@ -24,7 +24,7 @@ const ImageModal = ({ src, isOpen, onClose }: ImageModalProps) => {
                 });
             };
         }
-    }, [isOpen]);
+    }, [src]);
 
     if (!src) return null;
 
