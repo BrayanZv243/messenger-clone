@@ -1,13 +1,15 @@
 "use client";
 
 import { getInitialsColor } from "@/app/actions/getRandomColorUserAvatar";
+import clsx from "clsx";
 import { useMemo } from "react";
 
 interface UserProps {
     name: string;
+    isGroup?: boolean;
 }
 
-const UserAvatarDefault = ({ name }: UserProps) => {
+const UserAvatarDefault = ({ name, isGroup }: UserProps) => {
     const { backgroundColor, initials } = useMemo(
         () => getInitialsColor(name),
         [name]
@@ -16,7 +18,11 @@ const UserAvatarDefault = ({ name }: UserProps) => {
     return (
         <div className="flex items-center">
             <div
-                className="w-10 h-10 flex items-center justify-center rounded-full text-white text-lg font-bold"
+                className={clsx(
+                    `w-10 h-10 text-center items-center justify-center rounded-full text-white font-bold`,
+                    !isGroup && "flex text-lg",
+                    isGroup && "text-sm"
+                )}
                 style={{ backgroundColor }}
             >
                 {initials}

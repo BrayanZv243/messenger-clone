@@ -7,16 +7,17 @@ import {
     TransitionChild,
 } from "@headlessui/react";
 import { Fragment } from "react";
-import Loading from "../conversations/[conversationId]/components/Loading";
 
-interface ModalLoadingProps {
+interface ModalImageProps {
     isOpen?: boolean;
+    children: React.ReactNode;
+    onClose: () => void;
 }
 
-const ModalLoading = ({ isOpen }: ModalLoadingProps) => {
+const ModalImage = ({ isOpen, children, onClose }: ModalImageProps) => {
     return (
         <Transition show={isOpen} as={Fragment}>
-            <Dialog as="div" className="relative z-50" onClose={() => {}}>
+            <Dialog as="div" className="relative z-50" onClose={onClose}>
                 <TransitionChild
                     as={Fragment}
                     enter="ease-out duration-300"
@@ -39,9 +40,7 @@ const ModalLoading = ({ isOpen }: ModalLoadingProps) => {
                             leaveFrom="opacity-100 translate-y-0 sm:scale-100"
                             leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                         >
-                            <DialogPanel>
-                                <Loading />
-                            </DialogPanel>
+                            <DialogPanel>{children}</DialogPanel>
                         </TransitionChild>
                     </div>
                 </div>
@@ -50,4 +49,4 @@ const ModalLoading = ({ isOpen }: ModalLoadingProps) => {
     );
 };
 
-export default ModalLoading;
+export default ModalImage;
