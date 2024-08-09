@@ -54,20 +54,14 @@ const ConversationList = ({ initialItems, users }: ConversationListProps) => {
                             </div>
                         </Hint>
                     </div>
-                    {session.data ? (
-                        items.map((item) => (
-                            <ConversationBox
-                                key={item.id}
-                                data={item}
-                                selected={conversationId === item.id}
-                            />
-                        ))
-                    ) : (
-                        <div className="-mt-16">
-                            {/* Render Conversations Skeleton */}
-                            <Loading />
-                        </div>
-                    )}
+
+                    {items.map((item) => (
+                        <ConversationBox
+                            key={item.id}
+                            data={item}
+                            selected={conversationId === item.id}
+                        />
+                    ))}
                 </div>
             </aside>
         </>

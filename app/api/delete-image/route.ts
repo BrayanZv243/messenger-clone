@@ -11,7 +11,6 @@ export async function DELETE(request: Request) {
     try {
         const body = await request.json();
         const { publicId } = body;
-        console.log(publicId);
         if (!publicId) {
             return new NextResponse("Invalid data", {
                 status: 400,

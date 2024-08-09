@@ -75,7 +75,6 @@ const Form = () => {
             await axios.delete("/api/delete-image", {
                 data: { publicId },
             });
-            console.log("Image deleted successfully");
         } catch (error) {
             console.error("Error deleting image:", error);
         }

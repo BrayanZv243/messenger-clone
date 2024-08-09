@@ -26,13 +26,10 @@ const UserList = ({ items }: UserListProps) => {
                         People
                     </div>
                 </div>
-                {session.data ? (
-                    items.map((item) => <UserBox key={item.id} data={item} />)
-                ) : (
-                    <div className="-mt-16">
-                        <Loading />
-                    </div>
-                )}
+
+                {items.map((item) => (
+                    <UserBox key={item.id} data={item} />
+                ))}
             </div>
         </aside>
     );

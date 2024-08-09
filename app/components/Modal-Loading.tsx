@@ -9,13 +9,9 @@ import {
 import { Fragment } from "react";
 import Loading from "../conversations/[conversationId]/components/Loading";
 
-interface ModalLoadingProps {
-    isOpen?: boolean;
-}
-
-const ModalLoading = ({ isOpen }: ModalLoadingProps) => {
+const ModalLoading = () => {
     return (
-        <Transition show={isOpen} as={Fragment}>
+        <Transition show as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={() => {}}>
                 <TransitionChild
                     as={Fragment}
