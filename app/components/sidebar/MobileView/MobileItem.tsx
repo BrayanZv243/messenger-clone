@@ -31,7 +31,7 @@ const MobileItem: React.FC<MobileItemProps> = ({
 
     return (
         <>
-            {loading && <ModalLoading isOpen={true} />}
+            {loading && <ModalLoading />}
             <Link
                 href={href}
                 onClick={handleClick}

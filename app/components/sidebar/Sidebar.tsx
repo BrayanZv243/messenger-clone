@@ -1,5 +1,7 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import DesktopSidebar from "./DesktopView/DesktopSidebar";
+import DesktopSidebar, {
+    DesktopSidebarSkeleton,
+} from "./DesktopView/DesktopSidebar";
 import MobileFooter from "./MobileView/MobileFooter";
 
 async function Sidebar({ children }: { children: React.ReactNode }) {
@@ -13,5 +15,13 @@ async function Sidebar({ children }: { children: React.ReactNode }) {
         </div>
     );
 }
+
+export const SidebarSkeleton = () => {
+    return (
+        <aside className="h-full">
+            <DesktopSidebarSkeleton />
+        </aside>
+    );
+};
 
 export default Sidebar;

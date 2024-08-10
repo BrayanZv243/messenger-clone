@@ -7,6 +7,8 @@ import MessageBox from "./MessageBox";
 import { useSession } from "next-auth/react";
 import Loading from "./Loading";
 import axios from "axios";
+import { pusherClient } from "@/app/libs/pusher";
+import { find } from "lodash";
 
 interface BodyProps {
     initialMessages: FullMessageType[];
@@ -46,6 +48,41 @@ const Body = ({ initialMessages }: BodyProps) => {
 
     useEffect(() => {
         axios.post(`/api/conversations/${conversationId}/seen`);
+    }, [conversationId]);
+
+    useEffect(() => {
+        pusherClient.subscribe(conversationId);
+        bottomRef?.current?.scrollIntoView({ behavior: "smooth" });
+
+        const messagesHandler = (message: FullMessageType) => {
+            axios.post(`/api/conversations/${conversationId}/seen`);
+
+            setMessages((current) => {
+                if (find(current, { id: message.id })) return current;
+
+                return [...current, message];
+            });
+            bottomRef?.current?.scrollIntoView({ behavior: "smooth" });
+        };
+
+        const updateMessageHandler = (newMessage: FullMessageType) => {
+            setMessages((current) =>
+                current.map((currentMessage) => {
+                    if (currentMessage.id === newMessage.id) return newMessage;
+
+                    return currentMessage;
+                })
+            );
+        };
+
+        pusherClient.bind("messages:new", messagesHandler);
+        pusherClient.bind("message:update", updateMessageHandler);
+
+        return () => {
+            pusherClient.unsubscribe(conversationId);
+            pusherClient.unbind("messages:new", messagesHandler);
+            pusherClient.unbind("message:update", updateMessageHandler);
+        };
     }, [conversationId]);
 
     // Render Body Messages Skeleton

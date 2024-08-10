@@ -137,6 +137,7 @@ const Form = () => {
                     {imageData ? (
                         <MessageInput
                             id="message"
+                            type="input"
                             register={register}
                             errors={errors}
                             placeholder="Write a message"
@@ -144,6 +145,7 @@ const Form = () => {
                     ) : (
                         <MessageInput
                             id="message"
+                            type="input"
                             register={register}
                             errors={errors}
                             required

@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { Hint } from "../../Hint";
-import ModalLoading from "../../Modal-Loading";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface DesktopItemProps {
     label: string;
@@ -21,28 +21,20 @@ const DesktopItem: React.FC<DesktopItemProps> = ({
     onClick,
     active,
 }) => {
-    const [loading, setLoading] = useState(false);
     const router = useRouter();
 
     const handleClick = () => {
         if (active) return;
 
-        setLoading(true);
-        // Agregar un pequeño retraso para evitar parpadeo
-        setTimeout(() => {
-            if (onClick) {
-                onClick();
-            } else {
-                router.push(href);
-            }
-            // Asegurarse de que el loading dure al menos 300ms
-            setTimeout(() => setLoading(false), 300);
-        }, 650); // Retraso inicial para mostrar el loading modal
+        if (onClick) {
+            onClick();
+        } else {
+            router.push(href);
+        }
     };
 
     return (
         <li>
-            {loading && <ModalLoading isOpen={true} />}
             <Hint label={label} side="right" align="center">
                 <div
                     className={clsx(
@@ -56,6 +48,14 @@ const DesktopItem: React.FC<DesktopItemProps> = ({
                 </div>
             </Hint>
         </li>
+    );
+};
+
+export const DesktopItemSkeleton = () => {
+    return (
+        <div className="group flex gap-x-3 rounded-full p-3 text-sm leading-6 font-semibold text-gray-500 bg-gray-200 animate-pulse">
+            <Skeleton className="h-4 w-4" />
+        </div>
     );
 };
 
