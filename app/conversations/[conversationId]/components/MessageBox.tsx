@@ -11,10 +11,6 @@ import ImageModal from "./ImageModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import FileIcon, { FileType, is_Image } from "@/app/components/FileIcon";
 import { FaDownload } from "react-icons/fa";
-import ProfileDrawer from "./ProfileDrawer";
-import { User } from "@prisma/client";
-import useConversation from "@/app/hooks/useConversation";
-import useOtherUser from "@/app/hooks/useOtherUser";
 import ProfileDrawerUser from "./ProfileDrawerUser";
 
 interface MessageBoxProps {
@@ -43,8 +39,10 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     );
     const body = clsx("flex flex-col gap-0 -mt-[16px]", isOwn && "items-end");
     const message = clsx(
-        "relative text-sm w-fit overflow-hidden",
-        isOwn ? "bg-sky-500 text-white" : "bg-gray-100",
+        "relative text-sm overflow-hidden",
+        (isOwn && data.body) || (fileType && !isFormatImage)
+            ? "bg-sky-500 text-white"
+            : !isFormatImage && "bg-gray-100",
         data.image ? "rounded-md p-0" : "rounded-full py-2 px-3"
     );
 
@@ -109,14 +107,13 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                                     isOpen={imageModalOpen}
                                     onClose={() => setImageModalOpen(false)}
                                 />
-
                                 <Image
                                     onClick={() => setImageModalOpen(true)}
                                     alt="Image"
-                                    height={228}
-                                    width={228}
+                                    height={1920}
+                                    width={1080}
                                     src={data.image!}
-                                    className="object-cover cursor-pointer hover:scale-125 transition translate w-auto h-auto "
+                                    className="w-full object-contain max-h-80 cursor-pointer hover:scale-125 transition translate sm:max-w-sm md:max-w-sm lg:max-w-sm xl:max-w-sm 2xl:max-w-2xl"
                                 />
                                 <div onClick={handleDownload}>
                                     <div className="absolute bottom-2 right-2 bg-gray-200 cursor-pointer rounded-md p-0.5 opacity-60 hover:opacity-100 transition-opacity">
@@ -127,17 +124,19 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                         )}
                         {fileType && !isFormatImage && (
                             <>
-                                <div className="w-full flex justify-center hover:scale-125 transition">
-                                    <div onClick={handleDownload}>
-                                        <FileIcon
-                                            type={fileType}
-                                            className="w-28 h-28 cursor-pointer mt-4"
-                                        />
+                                <div className="w-full hover:shadow-lg p-2 ">
+                                    <div className="w-full flex justify-center transition">
+                                        <div onClick={handleDownload}>
+                                            <FileIcon
+                                                type={fileType}
+                                                className="w-24 h-24 cursor-pointer mt-4 "
+                                            />
+                                        </div>
                                     </div>
+                                    <p className="w-32 text-xs mt-au ">
+                                        {fileName}.{fileType}
+                                    </p>
                                 </div>
-                                <p className="text-sm leading-3 p-2">
-                                    {fileName}.{fileType}
-                                </p>
                             </>
                         )}
                         {data.body}
