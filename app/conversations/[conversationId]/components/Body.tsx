@@ -86,6 +86,8 @@ const Body = ({ initialMessages }: BodyProps) => {
         };
     }, [conversationId]);
 
+    if (!session.data) return <BodyMessagesSkeleton />;
+
     return (
         <div className="flex-1 overflow-y-auto mt-3" ref={bottomRef}>
             {messages.map((message, i) => (
