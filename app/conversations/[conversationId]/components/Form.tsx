@@ -11,6 +11,7 @@ import ButtonSend from "./ButtonSend";
 import { IoTrash } from "react-icons/io5";
 import { Hint } from "@/app/components/Hint";
 import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Form = () => {
     const { conversationId } = useConversation();
@@ -158,6 +159,25 @@ const Form = () => {
                         type="submit"
                     />
                 </form>
+            </div>
+        </div>
+    );
+};
+
+export const FormSkeleton = () => {
+    return (
+        <div className="flex items-center gap-2 lg:gap-2 w-full mt-2 lg:mt-0 mb-4 p-2">
+            <div className="bg-sky-400 animate-pulse w-14 h-8 rounded-lg">
+                <Skeleton /> {/* UPLOAD IMAGE */}
+            </div>
+
+            <div className="flex items-center gap-2 lg:gap-4 w-full">
+                <div className="w-full h-10 animate-pulse rounded-full bg-gray-300">
+                    <Skeleton /> {/* INPUT */}
+                </div>
+                <div className="w-12 h-10 bg-sky-400 animate-pulse rounded-full">
+                    <Skeleton /> {/* BUTTON SEND */}
+                </div>
             </div>
         </div>
     );

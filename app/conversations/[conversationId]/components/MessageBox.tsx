@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState } from "react";
 import ImageModal from "./ImageModal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MessageBoxProps {
     data: FullMessageType;
@@ -72,6 +73,68 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                 {isLast && isOwn && seenList.length > 0 && (
                     <div className="text-xs font-light text-gray-500">{`Seen by ${seenList}`}</div>
                 )}
+            </div>
+        </div>
+    );
+};
+
+interface MessageBoxSkeletonProps {
+    number: number;
+}
+
+export const MessageBoxSkeleton = ({ number }: MessageBoxSkeletonProps) => {
+    // To simulate own messages
+    const isOwn = !!(number % 2);
+
+    return (
+        <div className={clsx(`flex gap-3 p-4`, number % 2 && "justify-end")}>
+            <div
+                className={clsx(
+                    "w-9 h-9 rounded-full bg-gray-200 animate-pulse",
+                    isOwn && "order-2 bg-sky-300"
+                )}
+            >
+                <Skeleton />
+            </div>
+            <div
+                className={clsx(
+                    "flex flex-col gap-0 -mt-[16px]",
+                    isOwn && "items-end"
+                )}
+            >
+                <div
+                    className={clsx(
+                        `flex items-center gap-1 w-full animate-pulse mb-2`,
+                        isOwn && "justify-end"
+                    )}
+                >
+                    <div
+                        className={clsx(
+                            `w-1/2 xl:w-1/5 lg:w-1/6 md:w-1/3 h-4 bg-gray-200 rounded-full`,
+                            isOwn && "bg-sky-200"
+                        )}
+                    >
+                        <Skeleton />
+                    </div>
+                    <div
+                        className={clsx(
+                            `w-1/6 xl:w-1/12 lg:w-1/12 h-4 bg-gray-200 rounded-full`,
+                            isOwn && "bg-sky-200"
+                        )}
+                    >
+                        <Skeleton />
+                    </div>
+                </div>
+                <div
+                    className={clsx(
+                        "w-40 lg:w-80 xl:w-80 animate-pulse rounded-full",
+                        isOwn ? "bg-sky-500 text-white" : "bg-gray-200"
+                    )}
+                >
+                    <div className="animate-pulse w-full h-12 ">
+                        <Skeleton /> {/* BODY MESSAGE */}
+                    </div>
+                </div>
             </div>
         </div>
     );

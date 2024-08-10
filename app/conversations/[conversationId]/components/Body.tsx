@@ -3,9 +3,8 @@
 import useConversation from "@/app/hooks/useConversation";
 import { FullMessageType } from "@/app/types";
 import { useEffect, useRef, useState } from "react";
-import MessageBox from "./MessageBox";
+import MessageBox, { MessageBoxSkeleton } from "./MessageBox";
 import { useSession } from "next-auth/react";
-import Loading from "./Loading";
 import axios from "axios";
 import { pusherClient } from "@/app/libs/pusher";
 import { find } from "lodash";
@@ -85,11 +84,8 @@ const Body = ({ initialMessages }: BodyProps) => {
         };
     }, [conversationId]);
 
-    // Render Body Messages Skeleton
-    if (!session.data) return <Loading />;
-
     return (
-        <div className="flex-1 overflow-y-auto" ref={bottomRef}>
+        <div className="flex-1 overflow-y-auto mt-3" ref={bottomRef}>
             {messages.map((message, i) => (
                 <MessageBox
                     isLast={i === messages.length - 1}
@@ -98,6 +94,16 @@ const Body = ({ initialMessages }: BodyProps) => {
                 />
             ))}
             <div className="pt-2" />
+        </div>
+    );
+};
+
+export const BodyMessagesSkeleton = () => {
+    return (
+        <div className="flex-1 overflow-y-auto mt-3">
+            {[...Array(5)].map((_, i) => (
+                <MessageBoxSkeleton key={i} number={i} />
+            ))}
         </div>
     );
 };
