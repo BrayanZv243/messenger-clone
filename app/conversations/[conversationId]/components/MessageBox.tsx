@@ -11,6 +11,11 @@ import ImageModal from "./ImageModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import FileIcon, { FileType, is_Image } from "@/app/components/FileIcon";
 import { FaDownload } from "react-icons/fa";
+import ProfileDrawer from "./ProfileDrawer";
+import { User } from "@prisma/client";
+import useConversation from "@/app/hooks/useConversation";
+import useOtherUser from "@/app/hooks/useOtherUser";
+import ProfileDrawerUser from "./ProfileDrawerUser";
 
 interface MessageBoxProps {
     data: FullMessageType;
@@ -23,6 +28,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     const [isFormatImage, setIsFormatImage] = useState(false);
     const [fileType, setFileType] = useState<FileType | null>(null);
     const [fileName, setFileName] = useState("");
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const isOwn = session?.data?.user?.email === data.sender.email;
     const seenList = (data.seen || [])
@@ -31,7 +37,10 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
         .join(", ");
 
     const container = clsx(`flex gap-3 p-4`, isOwn && "justify-end");
-    const avatar = clsx(isOwn && "order-2");
+    const avatar = clsx(
+        "cursor-pointer hover:opacity-50 transition-opacity",
+        isOwn && "order-2"
+    );
     const body = clsx("flex flex-col gap-0 -mt-[16px]", isOwn && "items-end");
     const message = clsx(
         "relative text-sm w-fit overflow-hidden",
@@ -72,65 +81,73 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     };
 
     return (
-        <div className={container}>
-            <div className={avatar}>
-                <Avatar user={data.sender} />
-            </div>
-            <div className={body}>
-                <div className="flex items-center gap-1">
-                    <div className="text-sm text-gray-500">
-                        {data.sender.name}
-                    </div>
-                    <div className="text-xs text-gray-400">
-                        {format(new Date(data.createdAt), "p")}
-                    </div>
+        <>
+            <ProfileDrawerUser
+                user={data.sender}
+                isOwn={isOwn}
+                isOpen={drawerOpen}
+                onClose={() => setDrawerOpen(false)}
+            />
+            <div className={container}>
+                <div className={avatar} onClick={() => setDrawerOpen(true)}>
+                    <Avatar user={data.sender} />
                 </div>
-                <div className={message}>
-                    {isFormatImage && (
-                        <>
-                            <ImageModal
-                                src={data.image}
-                                isOpen={imageModalOpen}
-                                onClose={() => setImageModalOpen(false)}
-                            />
+                <div className={body}>
+                    <div className="flex items-center gap-1">
+                        <div className="text-sm text-gray-500">
+                            {data.sender.name}
+                        </div>
+                        <div className="text-xs text-gray-400">
+                            {format(new Date(data.createdAt), "p")}
+                        </div>
+                    </div>
+                    <div className={message}>
+                        {isFormatImage && (
+                            <>
+                                <ImageModal
+                                    src={data.image}
+                                    isOpen={imageModalOpen}
+                                    onClose={() => setImageModalOpen(false)}
+                                />
 
-                            <Image
-                                onClick={() => setImageModalOpen(true)}
-                                alt="Image"
-                                height={228}
-                                width={228}
-                                src={data.image!}
-                                className="object-cover cursor-pointer hover:scale-125 transition translate w-auto h-auto "
-                            />
-                            <div onClick={handleDownload}>
-                                <div className="absolute bottom-2 right-2 bg-gray-200 cursor-pointer rounded-md p-0.5 opacity-60 hover:opacity-100 transition-opacity">
-                                    <FaDownload fill="black" />
-                                </div>
-                            </div>
-                        </>
-                    )}
-                    {fileType && !isFormatImage && (
-                        <>
-                            <div className="w-full flex justify-center hover:scale-125 transition">
+                                <Image
+                                    onClick={() => setImageModalOpen(true)}
+                                    alt="Image"
+                                    height={228}
+                                    width={228}
+                                    src={data.image!}
+                                    className="object-cover cursor-pointer hover:scale-125 transition translate w-auto h-auto "
+                                />
                                 <div onClick={handleDownload}>
-                                    <FileIcon
-                                        type={fileType}
-                                        className="w-28 h-28 cursor-pointer mt-4"
-                                    />
+                                    <div className="absolute bottom-2 right-2 bg-gray-200 cursor-pointer rounded-md p-0.5 opacity-60 hover:opacity-100 transition-opacity">
+                                        <FaDownload fill="black" />
+                                    </div>
                                 </div>
-                            </div>
-                            <p className="text-sm leading-3 p-2">
-                                {fileName}.{fileType}
-                            </p>
-                        </>
+                            </>
+                        )}
+                        {fileType && !isFormatImage && (
+                            <>
+                                <div className="w-full flex justify-center hover:scale-125 transition">
+                                    <div onClick={handleDownload}>
+                                        <FileIcon
+                                            type={fileType}
+                                            className="w-28 h-28 cursor-pointer mt-4"
+                                        />
+                                    </div>
+                                </div>
+                                <p className="text-sm leading-3 p-2">
+                                    {fileName}.{fileType}
+                                </p>
+                            </>
+                        )}
+                        {data.body}
+                    </div>
+                    {isLast && isOwn && seenList.length > 0 && (
+                        <div className="text-xs font-light text-gray-500">{`Seen by ${seenList}`}</div>
                     )}
-                    {data.body}
                 </div>
-                {isLast && isOwn && seenList.length > 0 && (
-                    <div className="text-xs font-light text-gray-500">{`Seen by ${seenList}`}</div>
-                )}
             </div>
-        </div>
+        </>
     );
 };
 
