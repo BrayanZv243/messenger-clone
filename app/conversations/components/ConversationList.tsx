@@ -6,12 +6,13 @@ import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineGroupAdd } from "react-icons/md";
-import ConversationBox from "./ConversationBox";
+import ConversationBox, { ConversationBoxSkeleton } from "./ConversationBox";
 import { Hint } from "@/app/components/Hint";
 import { useSession } from "next-auth/react";
 import Loading from "../[conversationId]/components/Loading";
 import GroupChatModal from "./GroupChatModal";
 import { User } from "@prisma/client";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ConversationListProps {
     initialItems: FullConversationType[];
@@ -65,6 +66,28 @@ const ConversationList = ({ initialItems, users }: ConversationListProps) => {
                 </div>
             </aside>
         </>
+    );
+};
+
+export const ConversationListSkeleton = () => {
+    return (
+        <aside className="w-full fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block border-r border-gray-200">
+            <div className="px-5">
+                <div className="flex justify-between mb-4 pt-4 gap-x-5">
+                    <div className="animate-pulse rounded-lg w-2/4  bg-gray-200">
+                        <Skeleton />
+                    </div>
+
+                    <div className="rounded-full p-2 bg-gray-200 cursor-pointer hover:opacity-75 transition animate-pulse">
+                        <Skeleton className="h-4 w-4" />
+                    </div>
+                </div>
+
+                {[...Array(4)].map((_, i) => (
+                    <ConversationBoxSkeleton key={i} />
+                ))}
+            </div>
+        </aside>
     );
 };
 

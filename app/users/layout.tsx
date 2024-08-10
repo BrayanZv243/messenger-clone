@@ -1,18 +1,38 @@
 import { User } from "@prisma/client";
-import Sidebar from "../components/sidebar/Sidebar";
+import Sidebar, { SidebarSkeleton } from "../components/sidebar/Sidebar";
 import getUsers from "../actions/getUsers";
-import UserList from "./components/UserList";
+import UserList, { UserListSkeleton } from "./components/UserList";
+import { Suspense } from "react";
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const UserContent = async () => {
+    await delay(2000);
+
+    const users: User[] = await getUsers();
+    return <UserList items={users} />;
+};
 
 export default async function UsersLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const users: User[] = await getUsers();
     return (
-        <Sidebar>
-            <UserList items={users} />
-            <div className="h-full">{children}</div>
-        </Sidebar>
+        <Suspense fallback={<LayoutSkeleton />}>
+            <Sidebar>
+                <UserContent />
+                <div className="h-full">{children}</div>
+            </Sidebar>
+        </Suspense>
     );
 }
+
+export const LayoutSkeleton = () => {
+    return (
+        <>
+            <SidebarSkeleton />
+            <UserListSkeleton />
+        </>
+    );
+};

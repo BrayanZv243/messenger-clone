@@ -9,6 +9,7 @@ import { FullConversationType } from "@/app/types";
 import useOtherUser from "@/app/hooks/useOtherUser";
 import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/AvatarGroup";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ConversationBoxProps {
     data: FullConversationType;
@@ -86,6 +87,31 @@ const ConversationBox = ({ data, selected }: ConversationBoxProps) => {
                     >
                         {lastMessageText}
                     </p>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export const ConversationBoxSkeleton = () => {
+    return (
+        <div className="w-full relative flex items-center space-x-3 rounded-lg p-3">
+            <div className="animate-pulse rounded-full bg-gray-200">
+                <Skeleton className="w-12 h-12" /> {/* AVATAR */}
+            </div>
+            <div className="min-w-0 flex-1">
+                <div className="focus:outline-none">
+                    <div className="flex justify-between mb-0">
+                        <div className="bg-gray-200 rounded-md w-2/3 animate-pulse">
+                            <Skeleton className="w-full h-5" /> {/* NAME */}
+                        </div>
+                        <div className="bg-gray-200 rounded-md flex justify-end w-12 h-3 animate-pulse">
+                            <Skeleton /> {/* HOUR */}
+                        </div>
+                    </div>
+                    <div className="animate-pulse bg-gray-200 rounded-md w-1/2 mt-2 border`">
+                        <Skeleton className="w-full h-2" /> {/* LAST MESSAGE */}
+                    </div>
                 </div>
             </div>
         </div>

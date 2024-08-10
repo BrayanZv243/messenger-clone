@@ -2,6 +2,7 @@
 
 import Avatar from "@/app/components/Avatar";
 import ModalLoading from "@/app/components/Modal-Loading";
+import { Skeleton } from "@/components/ui/skeleton";
 import { User } from "@prisma/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
@@ -49,6 +50,25 @@ const UserBox = ({ data }: UserBoxProps) => {
                 </div>
             </div>
         </>
+    );
+};
+
+export const UserBoxSkeleton = () => {
+    return (
+        <div className="w-full relative flex items-center space-x-3 rounded-lg p-3">
+            <div className="animate-pulse rounded-full bg-gray-200">
+                <Skeleton className="w-12 h-12" /> {/* AVATAR */}
+            </div>
+            <div className="min-w-0 flex-1">
+                <div className="focus:outline-none">
+                    <div className="flex justify-between mb-0">
+                        <div className="bg-gray-200 rounded-md w-3/4 md:w-3/4 xl:w-3/4 sm:w-1/4  animate-pulse">
+                            <Skeleton className="w-full h-5" /> {/* NAME */}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 
