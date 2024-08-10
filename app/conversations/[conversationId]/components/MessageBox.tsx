@@ -2,14 +2,15 @@
 
 import Avatar from "@/app/components/Avatar";
 import { FullMessageType } from "@/app/types";
-import UserAvatarDefault from "@/components/UserAvatarDefault";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ImageModal from "./ImageModal";
 import { Skeleton } from "@/components/ui/skeleton";
+import FileIcon, { FileType, is_Image } from "@/app/components/FileIcon";
+import { FaDownload } from "react-icons/fa";
 
 interface MessageBoxProps {
     data: FullMessageType;
@@ -19,6 +20,9 @@ interface MessageBoxProps {
 const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     const session = useSession();
     const [imageModalOpen, setImageModalOpen] = useState(false);
+    const [isFormatImage, setIsFormatImage] = useState(false);
+    const [fileType, setFileType] = useState<FileType | null>(null);
+    const [fileName, setFileName] = useState("");
 
     const isOwn = session?.data?.user?.email === data.sender.email;
     const seenList = (data.seen || [])
@@ -28,14 +32,44 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
 
     const container = clsx(`flex gap-3 p-4`, isOwn && "justify-end");
     const avatar = clsx(isOwn && "order-2");
-
     const body = clsx("flex flex-col gap-0 -mt-[16px]", isOwn && "items-end");
-
     const message = clsx(
-        "text-sm w-fit overflow-hidden",
+        "relative text-sm w-fit overflow-hidden",
         isOwn ? "bg-sky-500 text-white" : "bg-gray-100",
         data.image ? "rounded-md p-0" : "rounded-full py-2 px-3"
     );
+
+    useEffect(() => {
+        if (data.image) {
+            const extractFileNameFromUrl = (url: string) => {
+                const parts = url.split("/");
+                const lastPart = parts.pop()!.split(".");
+                const lastIndex = lastPart[0].lastIndexOf("_");
+
+                const fileName = lastPart[0].substring(0, lastIndex);
+                if (!fileName) return "File";
+                return fileName;
+            };
+
+            setFileName(extractFileNameFromUrl(data.image));
+
+            const fileType = data.image.split(".").pop() as FileType;
+            setFileType(fileType);
+            setIsFormatImage(is_Image(fileType));
+        }
+    }, [data.image]);
+
+    const handleDownload = async () => {
+        const response = await fetch(data.image!);
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${fileName}.${fileType}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     return (
         <div className={container}>
@@ -52,23 +86,45 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                     </div>
                 </div>
                 <div className={message}>
-                    <ImageModal
-                        src={data.image}
-                        isOpen={imageModalOpen}
-                        onClose={() => setImageModalOpen(false)}
-                    />
-                    {data.image ? (
-                        <Image
-                            onClick={() => setImageModalOpen(true)}
-                            alt="Image"
-                            height={228}
-                            width={228}
-                            src={data.image}
-                            className="object-cover cursor-pointer hover:scale-125 transition translate w-auto h-auto"
-                        />
-                    ) : (
-                        <div>{data.body}</div>
+                    {isFormatImage && (
+                        <>
+                            <ImageModal
+                                src={data.image}
+                                isOpen={imageModalOpen}
+                                onClose={() => setImageModalOpen(false)}
+                            />
+
+                            <Image
+                                onClick={() => setImageModalOpen(true)}
+                                alt="Image"
+                                height={228}
+                                width={228}
+                                src={data.image!}
+                                className="object-cover cursor-pointer hover:scale-125 transition translate w-auto h-auto "
+                            />
+                            <div onClick={handleDownload}>
+                                <div className="absolute bottom-2 right-2 bg-gray-200 cursor-pointer rounded-md p-0.5 opacity-60 hover:opacity-100 transition-opacity">
+                                    <FaDownload fill="black" />
+                                </div>
+                            </div>
+                        </>
                     )}
+                    {fileType && !isFormatImage && (
+                        <>
+                            <div className="w-full flex justify-center hover:scale-125 transition">
+                                <div onClick={handleDownload}>
+                                    <FileIcon
+                                        type={fileType}
+                                        className="w-28 h-28 cursor-pointer mt-4"
+                                    />
+                                </div>
+                            </div>
+                            <p className="text-sm leading-3 p-2">
+                                {fileName}.{fileType}
+                            </p>
+                        </>
+                    )}
+                    {data.body}
                 </div>
                 {isLast && isOwn && seenList.length > 0 && (
                     <div className="text-xs font-light text-gray-500">{`Seen by ${seenList}`}</div>

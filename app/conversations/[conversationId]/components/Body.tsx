@@ -15,7 +15,8 @@ interface BodyProps {
 
 const Body = ({ initialMessages }: BodyProps) => {
     const session = useSession();
-    const [messages, setMessages] = useState(initialMessages);
+    const [messages, setMessages] =
+        useState<FullMessageType[]>(initialMessages);
     const bottomRef = useRef<HTMLDivElement>(null);
 
     const { conversationId } = useConversation();
@@ -30,8 +31,13 @@ const Body = ({ initialMessages }: BodyProps) => {
             }
         };
 
-        bottomRef.current?.addEventListener("scroll", handleScroll);
-    }, [session, conversationId]);
+        const currentRef = bottomRef.current;
+        currentRef?.addEventListener("scroll", handleScroll);
+
+        return () => {
+            currentRef?.removeEventListener("scroll", handleScroll);
+        };
+    }, [conversationId]);
 
     useEffect(() => {
         if (bottomRef.current) {
@@ -50,37 +56,33 @@ const Body = ({ initialMessages }: BodyProps) => {
     }, [conversationId]);
 
     useEffect(() => {
-        pusherClient.subscribe(conversationId);
-        bottomRef?.current?.scrollIntoView({ behavior: "smooth" });
-
-        const messagesHandler = (message: FullMessageType) => {
+        const handleNewMessage = (message: FullMessageType) => {
             axios.post(`/api/conversations/${conversationId}/seen`);
-
             setMessages((current) => {
                 if (find(current, { id: message.id })) return current;
-
                 return [...current, message];
             });
-            bottomRef?.current?.scrollIntoView({ behavior: "smooth" });
+            bottomRef.current?.scrollIntoView({ behavior: "smooth" });
         };
 
-        const updateMessageHandler = (newMessage: FullMessageType) => {
+        const handleUpdateMessage = (newMessage: FullMessageType) => {
             setMessages((current) =>
-                current.map((currentMessage) => {
-                    if (currentMessage.id === newMessage.id) return newMessage;
-
-                    return currentMessage;
-                })
+                current.map((currentMessage) =>
+                    currentMessage.id === newMessage.id
+                        ? newMessage
+                        : currentMessage
+                )
             );
         };
 
-        pusherClient.bind("messages:new", messagesHandler);
-        pusherClient.bind("message:update", updateMessageHandler);
+        pusherClient.subscribe(conversationId);
+        pusherClient.bind("messages:new", handleNewMessage);
+        pusherClient.bind("message:update", handleUpdateMessage);
 
         return () => {
             pusherClient.unsubscribe(conversationId);
-            pusherClient.unbind("messages:new", messagesHandler);
-            pusherClient.unbind("message:update", updateMessageHandler);
+            pusherClient.unbind("messages:new", handleNewMessage);
+            pusherClient.unbind("message:update", handleUpdateMessage);
         };
     }, [conversationId]);
 

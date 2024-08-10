@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useConversation from "@/app/hooks/useConversation";
 import axios from "axios";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
@@ -12,10 +12,14 @@ import { IoTrash } from "react-icons/io5";
 import { Hint } from "@/app/components/Hint";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
+import FileIcon, { is_Image } from "@/app/components/FileIcon";
+import { FileType } from "@/app/components/FileIcon";
 
 const Form = () => {
     const { conversationId } = useConversation();
     const [imageData, setImageData] = useState<string | null>(null);
+    const [isImage, setIsImage] = useState(false);
+    const [fileType, setFileType] = useState<FileType>("generic");
     const [filename, setFilename] = useState("");
     const [width, setWidth] = useState(0);
     const [height, setHeight] = useState(0);
@@ -50,15 +54,18 @@ const Form = () => {
     };
 
     const handleUpload = (result: any) => {
+        const format = result?.info.format || result?.info.path.split(".")[1];
         const originalName: string = truncateFileName(
             result?.info.original_filename,
-            result?.info.format
+            format
         );
 
         setFilename(originalName);
+        setFileType(format as FileType);
         setWidth(result?.info.width);
         setHeight(result?.info.height);
         setImageData(result?.info?.secure_url);
+        setIsImage(is_Image(format));
     };
 
     const truncateFileName = (name: string, format: string): string => {
@@ -93,6 +100,22 @@ const Form = () => {
         return lastPart[0];
     };
 
+    useEffect(() => {
+        const handleBeforeUnload = (event: any) => {
+            if (imageData) {
+                handleDelete();
+                event.preventDefault();
+                event.returnValue = "";
+            }
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    });
+
     return (
         <div className="py-4 px-4 bg-white border-t flex flex-col items-center gap-2 lg:gap-4 w-full sm:overflow-auto">
             {imageData && (
@@ -100,14 +123,26 @@ const Form = () => {
                     <div className="flex flex-col items-start">
                         <div className="relative w-auto shadow-xl shadow-gray-600 rounded-lg">
                             <Hint label={filename} asChild side="top">
-                                <Image
-                                    src={imageData}
-                                    width={width}
-                                    height={height}
-                                    alt="Preview"
-                                    className="w-auto h-36 object-contain rounded-md bg-gray-100 border-4 border-solid border-gray-300/100"
-                                />
+                                {isImage ? (
+                                    <>
+                                        <Image
+                                            src={imageData}
+                                            width={width}
+                                            height={height}
+                                            alt="Preview"
+                                            className="w-auto h-36 object-contain rounded-md bg-gray-100 border-4 border-solid border-gray-300/100"
+                                        />
+                                    </>
+                                ) : (
+                                    <div>
+                                        <FileIcon
+                                            className="h-28 w-28 rounded-md bg-gray-100 border-4 border-solid border-gray-300/100 fill-sky-400"
+                                            type={fileType}
+                                        />
+                                    </div>
+                                )}
                             </Hint>
+
                             <Hint label="Delete file" asChild>
                                 <div className="absolute -top-2 -right-1 cursor-pointer rounded-md p-0.5 bg-gray-400/75 shadow-lg shadow-gray-600">
                                     <IoTrash
@@ -122,7 +157,7 @@ const Form = () => {
             )}
             <div className="flex items-center gap-2 lg:gap-4 w-full mt-2 lg:mt-0">
                 <CldUploadButton
-                    options={{ maxFiles: 1 }}
+                    options={{ maxFiles: 1, maxFileSize: 5 * 1024 * 1024 }}
                     onSuccess={handleUpload}
                     uploadPreset="cjsiejih"
                 >
