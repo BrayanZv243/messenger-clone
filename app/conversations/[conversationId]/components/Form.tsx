@@ -12,7 +12,10 @@ import { IoTrash } from "react-icons/io5";
 import { Hint } from "@/app/components/Hint";
 import Image from "next/image";
 import { Skeleton } from "@/components/ui/skeleton";
-import FileIcon, { is_Image } from "@/app/components/FileIcon";
+import FileIcon, {
+    is_Image,
+    truncateFileName,
+} from "@/app/components/FileIcon";
 import { FileType } from "@/app/components/FileIcon";
 
 const Form = () => {
@@ -55,27 +58,17 @@ const Form = () => {
 
     const handleUpload = (result: any) => {
         const format = result?.info.format || result?.info.path.split(".")[1];
-        const originalName: string = truncateFileName(
+        const truncateName: string = truncateFileName(
             result?.info.original_filename,
             format
         );
-
-        setFilename(originalName);
+        console.log(truncateName);
+        setFilename(truncateName);
         setFileType(format as FileType);
         setWidth(result?.info.width);
         setHeight(result?.info.height);
         setImageData(result?.info?.secure_url);
         setIsImage(is_Image(format));
-    };
-
-    const truncateFileName = (name: string, format: string): string => {
-        if (name.length > 20) {
-            name = `${name.substring(0, 20)}...`;
-        }
-
-        const fullFilename = `${name}.${format}`;
-
-        return fullFilename;
     };
 
     const deleteImage = async (publicId: string) => {
@@ -122,9 +115,9 @@ const Form = () => {
                 <div className="relative w-full h-full">
                     <div className="flex flex-col items-start">
                         <div className="relative w-auto shadow-xl shadow-gray-600 rounded-lg">
-                            <Hint label={filename} asChild side="top">
-                                {isImage ? (
-                                    <>
+                            {isImage ? (
+                                <>
+                                    <Hint label={filename} asChild side="top">
                                         <Image
                                             src={imageData}
                                             width={width}
@@ -132,16 +125,18 @@ const Form = () => {
                                             alt="Preview"
                                             className="w-auto h-36 object-contain rounded-md bg-gray-100 border-4 border-solid border-gray-300/100"
                                         />
-                                    </>
-                                ) : (
-                                    <div>
+                                    </Hint>
+                                </>
+                            ) : (
+                                <Hint label={filename} side="top">
+                                    <>
                                         <FileIcon
                                             className="h-28 w-28 rounded-md bg-gray-100 border-4 border-solid border-gray-300/100 fill-sky-400"
                                             type={fileType}
                                         />
-                                    </div>
-                                )}
-                            </Hint>
+                                    </>
+                                </Hint>
+                            )}
 
                             <Hint label="Delete file" asChild>
                                 <div className="absolute -top-2 -right-1 cursor-pointer rounded-md p-0.5 bg-gray-400/75 shadow-lg shadow-gray-600">

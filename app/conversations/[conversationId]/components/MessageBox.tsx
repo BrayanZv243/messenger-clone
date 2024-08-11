@@ -9,7 +9,11 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import ImageModal from "./ImageModal";
 import { Skeleton } from "@/components/ui/skeleton";
-import FileIcon, { FileType, is_Image } from "@/app/components/FileIcon";
+import FileIcon, {
+    FileType,
+    is_Image,
+    truncateFileName,
+} from "@/app/components/FileIcon";
 import { FaDownload } from "react-icons/fa";
 import ProfileDrawerUser from "./ProfileDrawerUser";
 
@@ -24,6 +28,8 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     const [isFormatImage, setIsFormatImage] = useState(false);
     const [fileType, setFileType] = useState<FileType | null>(null);
     const [fileName, setFileName] = useState("");
+    const [fullFileName, setFullFileName] = useState("");
+    const [fileSize, setFileSize] = useState([0, ""]);
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const isOwn = session?.data?.user?.email === data.sender.email;
@@ -41,13 +47,15 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     const message = clsx(
         "relative text-sm overflow-hidden",
         (isOwn && data.body) || (fileType && !isFormatImage)
-            ? "bg-sky-500 text-white"
+            ? "bg-sky-500 text-gray-100"
             : !isFormatImage && "bg-gray-100",
         data.image ? "rounded-md p-0" : "rounded-full py-2 px-3"
     );
 
     useEffect(() => {
         if (data.image) {
+            fetchFileSize(data.image);
+
             const extractFileNameFromUrl = (url: string) => {
                 const parts = url.split("/");
                 const lastPart = parts.pop()!.split(".");
@@ -58,13 +66,59 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                 return fileName;
             };
 
-            setFileName(extractFileNameFromUrl(data.image));
+            const fileNameFromUrl = extractFileNameFromUrl(data.image);
+
+            setFileName(fileNameFromUrl);
 
             const fileType = data.image.split(".").pop() as FileType;
             setFileType(fileType);
             setIsFormatImage(is_Image(fileType));
+
+            const truncateName = truncateFileName(fileNameFromUrl, "", 40);
+            setFullFileName(truncateName);
         }
     }, [data.image]);
+    const fetchFileSize = async (fileUrl: string) => {
+        try {
+            const response = await fetch(fileUrl, {
+                method: "HEAD",
+            });
+
+            if (!response.ok) {
+                console.error("Failed to fetch file headers");
+                return null;
+            }
+            const contentLength = response.headers.get("Content-Length");
+
+            if (!contentLength) {
+                console.error("Content-Length header not found");
+                return null;
+            }
+
+            if (contentLength) {
+                const fileSizeInBytes = parseInt(contentLength, 10);
+                if (fileSizeInBytes < 1024) {
+                    setFileSize([fileSizeInBytes, "B"]);
+                    return;
+                }
+
+                const fileSizeInKB = parseInt(
+                    (fileSizeInBytes / 1024).toFixed(2)
+                );
+                if (fileSizeInKB < 1024) {
+                    setFileSize([fileSizeInKB, "kB"]);
+                    return;
+                }
+
+                const fileSizeInMB = parseInt(
+                    (fileSizeInBytes / (1024 * 1024)).toFixed(2)
+                );
+                setFileSize([fileSizeInMB, "MB"]);
+            }
+        } catch (error) {
+            console.error("Error fetching file size:", error);
+        }
+    };
 
     const handleDownload = async () => {
         const response = await fetch(data.image!);
@@ -124,18 +178,29 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                         )}
                         {fileType && !isFormatImage && (
                             <>
-                                <div className="w-full hover:shadow-lg p-2 ">
-                                    <div className="w-full flex justify-center transition">
-                                        <div onClick={handleDownload}>
+                                <div
+                                    onClick={handleDownload}
+                                    className="cursor-pointer"
+                                >
+                                    <div className="grid grid-cols-3 grid-rows-3 w-72 h-24">
+                                        <div className="row-span-3 justify-center ">
                                             <FileIcon
                                                 type={fileType}
-                                                className="w-24 h-24 cursor-pointer mt-4 "
+                                                className="w-full h-full cursor-pointer p-2"
                                             />
                                         </div>
+                                        <div className="mt-auto mb-2 col-span-2 row-span-2">
+                                            <p className="text-sm mt-auto break-words font-semibold leading-2">
+                                                {fullFileName}
+                                            </p>
+                                        </div>
+                                        <div className="col-span-2 row-span-3 mt-2 text-sm ">
+                                            <p className="text-xs text-gray-200 mb-auto">
+                                                {fileType.toUpperCase()} •{" "}
+                                                {fileSize[0]} {fileSize[1]}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <p className="w-32 text-xs mt-au ">
-                                        {fileName}.{fileType}
-                                    </p>
                                 </div>
                             </>
                         )}
