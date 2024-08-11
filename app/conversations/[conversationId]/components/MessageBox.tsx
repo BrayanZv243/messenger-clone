@@ -29,7 +29,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     const [fileType, setFileType] = useState<FileType | null>(null);
     const [fileName, setFileName] = useState("");
     const [fullFileName, setFullFileName] = useState("");
-    const [fileSize, setFileSize] = useState([0, ""]);
+    const [fileSize, setFileSize] = useState({ size: 0, sizeType: "" });
     const [drawerOpen, setDrawerOpen] = useState(false);
 
     const isOwn = session?.data?.user?.email === data.sender.email;
@@ -99,7 +99,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
             if (contentLength) {
                 const fileSizeInBytes = parseInt(contentLength, 10);
                 if (fileSizeInBytes < 1024) {
-                    setFileSize([fileSizeInBytes, "B"]);
+                    setFileSize({ size: fileSizeInBytes, sizeType: "B" });
                     return;
                 }
 
@@ -107,14 +107,14 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                     (fileSizeInBytes / 1024).toFixed(2)
                 );
                 if (fileSizeInKB < 1024) {
-                    setFileSize([fileSizeInKB, "kB"]);
+                    setFileSize({ size: fileSizeInKB, sizeType: "kB" });
                     return;
                 }
 
                 const fileSizeInMB = parseInt(
                     (fileSizeInBytes / (1024 * 1024)).toFixed(2)
                 );
-                setFileSize([fileSizeInMB, "MB"]);
+                setFileSize({ size: fileSizeInMB, sizeType: "MB" });
             }
         } catch (error) {
             console.error("Error fetching file size:", error);
@@ -198,7 +198,8 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                                         <div className="col-span-2 row-span-3 mt-2 text-sm ">
                                             <p className="text-xs text-gray-200 mb-auto">
                                                 {fileType.toUpperCase()} •{" "}
-                                                {fileSize[0]} {fileSize[1]}
+                                                {fileSize.size}{" "}
+                                                {fileSize.sizeType}
                                             </p>
                                         </div>
                                     </div>
