@@ -96,7 +96,11 @@ const Body = ({ initialMessages }: BodyProps) => {
     if (!session.data) return <BodyMessagesSkeleton />;
 
     return (
-        <div className="flex-1 overflow-y-auto mt-3" ref={topRef}>
+        <div
+            className="flex-1 overflow-y-auto mt-3"
+            ref={topRef}
+            suppressHydrationWarning
+        >
             {messages.map((message, i) => (
                 <MessageBox
                     isLast={i === messages.length - 1}
@@ -111,7 +115,7 @@ const Body = ({ initialMessages }: BodyProps) => {
 
 export const BodyMessagesSkeleton = () => {
     return (
-        <div className="flex-1 overflow-y-auto mt-3">
+        <div className="flex-1 overflow-y-auto mt-3" suppressHydrationWarning>
             {[...Array(5)].map((_, i) => (
                 <MessageBoxSkeleton key={i} number={i} />
             ))}

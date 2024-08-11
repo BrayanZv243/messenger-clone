@@ -141,7 +141,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                 isOpen={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
             />
-            <div className={container}>
+            <div className={container} suppressHydrationWarning>
                 <div className={avatar} onClick={() => setDrawerOpen(true)}>
                     <Avatar user={data.sender} />
                 </div>

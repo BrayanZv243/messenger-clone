@@ -67,6 +67,7 @@ const GroupChatModal = ({ isOpen, users, onClose }: GroupChatModal) => {
                             <Input
                                 register={register}
                                 label="Name"
+                                type="input"
                                 id="name"
                                 required
                                 errors={errors}
