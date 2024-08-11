@@ -2,11 +2,13 @@ import getCurrentUser from "@/app/actions/getCurrentUser";
 import DesktopSidebar, {
     DesktopSidebarSkeleton,
 } from "./DesktopView/DesktopSidebar";
-import MobileFooter from "./MobileView/MobileFooter";
+import MobileFooter, { MobileFooterSkeleton } from "./MobileView/MobileFooter";
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function Sidebar({ children }: { children: React.ReactNode }) {
     const currentUser = await getCurrentUser();
-
+    await delay(8000);
     return (
         <div className="h-full">
             <DesktopSidebar currentUser={currentUser!} />
@@ -20,6 +22,7 @@ export const SidebarSkeleton = () => {
     return (
         <aside className="h-full">
             <DesktopSidebarSkeleton />
+            <MobileFooterSkeleton />
         </aside>
     );
 };

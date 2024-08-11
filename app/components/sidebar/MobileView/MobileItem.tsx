@@ -4,6 +4,7 @@ import Link from "next/link";
 import clsx from "clsx";
 import { useState } from "react";
 import ModalLoading from "../../Modal-Loading";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface MobileItemProps {
     icon: any;
@@ -43,6 +44,16 @@ const MobileItem: React.FC<MobileItemProps> = ({
                 <Icon className="h-6 w-6" />
             </Link>
         </>
+    );
+};
+
+export const MobileItemSkeleton = () => {
+    return (
+        <div className=" flex text-sm leading-6  justify-center p-2 animate-pulse w-1/3 ">
+            <div className="rounded-full bg-gray-400 ">
+                <Skeleton className="w-8 h-8 " />
+            </div>
+        </div>
     );
 };
 

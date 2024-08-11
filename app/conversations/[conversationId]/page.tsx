@@ -28,7 +28,7 @@ const HeaderConversationContent = async ({ params }: { params: IParams }) => {
 
 const MessageBodyContent = async ({ params }: { params: IParams }) => {
     const messages = await getMessages(params.conversationId);
-    await delay(3500); // change in production i guess...
+    await delay(1500); // change in production i guess...
 
     return <Body initialMessages={messages} />;
 };

@@ -2,7 +2,7 @@
 
 import useConversation from "@/app/hooks/useConversation";
 import useRoutes from "@/app/hooks/useRoutes";
-import MobileItem from "./MobileItem";
+import MobileItem, { MobileItemSkeleton } from "./MobileItem";
 import { User } from "@prisma/client";
 
 interface MobileFooterProps {
@@ -16,7 +16,7 @@ const MobileFooter = ({ currentUser }: MobileFooterProps) => {
     if (isOpen) return null;
 
     return (
-        <div className="fixed justify-between w-full bottom-0 z-40 flex items-center bg-white border-t-[1px] lg:hidden">
+        <div className="fixed justify-center w-full bottom-0 z-40 flex items-center bg-white border-t-[1px] lg:hidden">
             {routes.map((route) => (
                 <MobileItem
                     key={route.href}
@@ -26,6 +26,16 @@ const MobileFooter = ({ currentUser }: MobileFooterProps) => {
                     onClick={route.onClick}
                     label={route.label}
                 />
+            ))}
+        </div>
+    );
+};
+
+export const MobileFooterSkeleton = () => {
+    return (
+        <div className="fixed justify-between bg-gray-100 w-full bottom-0 z-40 flex items-center border-t-[1px] lg:hidden animate-pulse ">
+            {[...Array(3)].map((_, i) => (
+                <MobileItemSkeleton key={i} />
             ))}
         </div>
     );

@@ -1,10 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { Hint } from "../../Hint";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DesktopSidebarSkeleton } from "./DesktopSidebar";
 
 interface DesktopItemProps {
     label: string;
@@ -21,6 +22,7 @@ const DesktopItem: React.FC<DesktopItemProps> = ({
     onClick,
     active,
 }) => {
+    const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
 
     const handleClick = () => {
@@ -29,9 +31,12 @@ const DesktopItem: React.FC<DesktopItemProps> = ({
         if (onClick) {
             onClick();
         } else {
+            setIsLoading(true);
             router.push(href);
         }
     };
+
+    if (isLoading) return <DesktopSidebarSkeleton />;
 
     return (
         <li>
