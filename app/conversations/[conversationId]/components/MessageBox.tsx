@@ -78,6 +78,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
             setFullFileName(truncateName);
         }
     }, [data.image]);
+
     const fetchFileSize = async (fileUrl: string) => {
         try {
             const response = await fetch(fileUrl, {

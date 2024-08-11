@@ -18,21 +18,28 @@ const Body = ({ initialMessages }: BodyProps) => {
     const [messages, setMessages] =
         useState<FullMessageType[]>(initialMessages);
     const bottomRef = useRef<HTMLDivElement>(null);
+    const topRef = useRef<HTMLDivElement>(null);
 
     const { conversationId } = useConversation();
 
     useEffect(() => {
         const handleScroll = () => {
-            if (bottomRef.current) {
+            if (topRef.current) {
                 localStorage.setItem(
                     conversationId,
-                    bottomRef.current.scrollTop.toString()
+                    topRef.current.scrollTop.toString()
                 );
             }
         };
 
-        const currentRef = bottomRef.current;
+        const currentRef = topRef.current;
         currentRef?.addEventListener("scroll", handleScroll);
+
+        const scrollPosition = localStorage.getItem(conversationId) || "0";
+        currentRef?.scrollTo({
+            top: parseFloat(scrollPosition),
+            behavior: "smooth",
+        });
 
         return () => {
             currentRef?.removeEventListener("scroll", handleScroll);
@@ -40,56 +47,56 @@ const Body = ({ initialMessages }: BodyProps) => {
     }, [conversationId]);
 
     useEffect(() => {
-        if (bottomRef.current) {
-            const scrollPosition = localStorage.getItem(conversationId) || "0";
-            setTimeout(() => {
-                bottomRef.current?.scrollTo({
-                    top: parseFloat(scrollPosition),
-                    behavior: "smooth",
-                });
-            }, 100);
-        }
-    }, [session, messages, conversationId]);
-
-    useEffect(() => {
         axios.post(`/api/conversations/${conversationId}/seen`);
     }, [conversationId]);
 
     useEffect(() => {
-        const handleNewMessage = (message: FullMessageType) => {
+        pusherClient.subscribe(conversationId);
+
+        const messageHandler = (message: FullMessageType) => {
             axios.post(`/api/conversations/${conversationId}/seen`);
+
             setMessages((current) => {
-                if (find(current, { id: message.id })) return current;
+                if (find(current, { id: message.id })) {
+                    return current;
+                }
+
                 return [...current, message];
             });
-            bottomRef.current?.scrollIntoView({ behavior: "smooth" });
         };
 
-        const handleUpdateMessage = (newMessage: FullMessageType) => {
+        const updateMessageHandler = (newMessage: FullMessageType) => {
             setMessages((current) =>
-                current.map((currentMessage) =>
-                    currentMessage.id === newMessage.id
-                        ? newMessage
-                        : currentMessage
-                )
+                current.map((currentMessage) => {
+                    if (currentMessage.id === newMessage.id) {
+                        return newMessage;
+                    }
+                    return currentMessage;
+                })
             );
         };
 
-        pusherClient.subscribe(conversationId);
-        pusherClient.bind("messages:new", handleNewMessage);
-        pusherClient.bind("message:update", handleUpdateMessage);
+        pusherClient.bind("messages:new", messageHandler);
+        pusherClient.bind("message:update", updateMessageHandler);
 
         return () => {
             pusherClient.unsubscribe(conversationId);
-            pusherClient.unbind("messages:new", handleNewMessage);
-            pusherClient.unbind("message:update", handleUpdateMessage);
+            pusherClient.unbind("messages:new", messageHandler);
+            pusherClient.unbind("message:update", updateMessageHandler);
         };
     }, [conversationId]);
+
+    // Use a separate effect to ensure scroll is updated after messages change
+    useEffect(() => {
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView();
+        }
+    }, [messages]);
 
     if (!session.data) return <BodyMessagesSkeleton />;
 
     return (
-        <div className="flex-1 overflow-y-auto mt-3" ref={bottomRef}>
+        <div className="flex-1 overflow-y-auto mt-3" ref={topRef}>
             {messages.map((message, i) => (
                 <MessageBox
                     isLast={i === messages.length - 1}
@@ -97,7 +104,7 @@ const Body = ({ initialMessages }: BodyProps) => {
                     data={message}
                 />
             ))}
-            <div className="pt-2" />
+            <div className="pt-2" ref={bottomRef} />
         </div>
     );
 };
