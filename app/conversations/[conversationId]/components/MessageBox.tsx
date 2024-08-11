@@ -45,7 +45,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     );
     const body = clsx("flex flex-col gap-0 -mt-[16px]", isOwn && "items-end");
     const message = clsx(
-        "relative text-sm overflow-hidden",
+        "relative text-sm overflow-hidden w-fit h-auto",
         (isOwn && data.body) || (fileType && !isFormatImage)
             ? "bg-sky-500 text-gray-100"
             : !isFormatImage && "bg-gray-100",
@@ -183,7 +183,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                                     onClick={handleDownload}
                                     className="cursor-pointer"
                                 >
-                                    <div className="grid grid-cols-3 grid-rows-3 w-72 h-24">
+                                    <div className="grid grid-cols-3 grid-rows-3 w-60 md:w-72 lg:w-80 h-24">
                                         <div className="row-span-3 justify-center ">
                                             <FileIcon
                                                 type={fileType}
@@ -191,7 +191,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                                             />
                                         </div>
                                         <div className="mt-auto mb-2 col-span-2 row-span-2">
-                                            <p className="text-sm mt-auto break-words font-semibold leading-2">
+                                            <p className="mr-2 text-sm mt-2 break-words font-semibold leading-2">
                                                 {fullFileName}
                                             </p>
                                         </div>
