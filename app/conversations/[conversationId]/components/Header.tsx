@@ -28,8 +28,7 @@ const Header = ({ conversation }: HeaderProps) => {
         return "Active";
     }, [conversation]);
 
-    // Render Header Skeleton
-    // if (!session.data) return;
+    if (!session.data) return <HeaderSkeleton />;
 
     return (
         <>

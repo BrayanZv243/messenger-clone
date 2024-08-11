@@ -5,7 +5,7 @@ import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import { Hint } from "../../Hint";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DesktopSidebarSkeleton } from "./DesktopSidebar";
+import ModalLoading from "../../Modal-Loading";
 
 interface DesktopItemProps {
     label: string;
@@ -22,21 +22,21 @@ const DesktopItem: React.FC<DesktopItemProps> = ({
     onClick,
     active,
 }) => {
-    const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleClick = () => {
         if (active) return;
 
         if (onClick) {
+            setIsLoading(true);
             onClick();
         } else {
-            setIsLoading(true);
             router.push(href);
         }
     };
 
-    if (isLoading) return <DesktopSidebarSkeleton />;
+    if (isLoading) return <ModalLoading />;
 
     return (
         <li>

@@ -11,7 +11,7 @@ import Loading from "../conversations/[conversationId]/components/Loading";
 
 const ModalLoading = () => {
     return (
-        <Transition show as={Fragment}>
+        <Transition show={true} as={Fragment}>
             <Dialog as="div" className="relative z-50" onClose={() => {}}>
                 <TransitionChild
                     as={Fragment}

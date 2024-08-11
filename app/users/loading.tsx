@@ -1,6 +1,6 @@
 import ModalLoading from "../components/Modal-Loading";
 
-const Loading = () => {
+const Loading = async () => {
     return (
         <div>
             <ModalLoading />
