@@ -36,7 +36,7 @@ const MessageBodyContent = async ({ params }: { params: IParams }) => {
 const ConversationId = async ({ params }: { params: IParams }) => {
     return (
         <div className="lg:pl-80 h-full">
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col ">
                 <Suspense fallback={<LayoutConversationSkeleton />}>
                     <HeaderConversationContent params={params} />
                     <MessageBodyContent params={params} />

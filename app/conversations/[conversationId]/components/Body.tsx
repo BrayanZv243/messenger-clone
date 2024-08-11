@@ -97,17 +97,25 @@ const Body = ({ initialMessages }: BodyProps) => {
 
     return (
         <div
-            className="flex-1 overflow-y-auto mt-3"
+            className="flex-1 overflow-y-auto py-3"
             ref={topRef}
             suppressHydrationWarning
         >
-            {messages.map((message, i) => (
-                <MessageBox
-                    isLast={i === messages.length - 1}
-                    key={message.id}
-                    data={message}
-                />
-            ))}
+            {messages.map((message, i) => {
+                const previousMessage = messages[i - 1];
+                const previousDate = previousMessage
+                    ? new Date(previousMessage.createdAt)
+                    : null;
+
+                return (
+                    <MessageBox
+                        isLast={i === messages.length - 1}
+                        key={message.id}
+                        data={message}
+                        previousMessage={previousDate}
+                    />
+                );
+            })}
             <div className="pt-2" ref={bottomRef} />
         </div>
     );
@@ -115,11 +123,16 @@ const Body = ({ initialMessages }: BodyProps) => {
 
 export const BodyMessagesSkeleton = () => {
     return (
-        <div className="flex-1 overflow-y-auto mt-3" suppressHydrationWarning>
-            {[...Array(5)].map((_, i) => (
-                <MessageBoxSkeleton key={i} number={i} />
-            ))}
-        </div>
+        <>
+            <div
+                className="flex-1 overflow-y-auto mt-3"
+                suppressHydrationWarning
+            >
+                {[...Array(5)].map((_, i) => (
+                    <MessageBoxSkeleton key={i} number={i} />
+                ))}
+            </div>
+        </>
     );
 };
 

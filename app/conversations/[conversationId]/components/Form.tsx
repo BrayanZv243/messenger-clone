@@ -20,6 +20,7 @@ import { FileType } from "@/app/components/FileIcon";
 
 const Form = () => {
     const { conversationId } = useConversation();
+
     const [imageData, setImageData] = useState<string | null>(null);
     const [isImage, setIsImage] = useState(false);
     const [fileType, setFileType] = useState<FileType>("generic");
@@ -62,12 +63,27 @@ const Form = () => {
             result?.info.original_filename,
             format
         );
-        console.log(truncateName);
+
         setFilename(truncateName);
         setFileType(format as FileType);
         setWidth(result?.info.width);
         setHeight(result?.info.height);
         setImageData(result?.info?.secure_url);
+        setIsImage(is_Image(format));
+    };
+
+    const handleUploadDragNDrop = (result: any) => {
+        const format = result?.format || result?.path.split(".")[1];
+        const truncateName: string = truncateFileName(
+            result?.original_filename,
+            format
+        );
+
+        setFilename(truncateName);
+        setFileType(format as FileType);
+        setWidth(result?.width);
+        setHeight(result?.height);
+        setImageData(result?.secure_url);
         setIsImage(is_Image(format));
     };
 
@@ -108,89 +124,105 @@ const Form = () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
         };
     });
-
     return (
-        <div className="py-4 px-4 bg-white border-t flex flex-col items-center gap-2 lg:gap-4 w-full sm:overflow-auto">
-            {imageData && (
-                <div className="relative w-full h-full">
-                    <div className="flex flex-col items-start">
-                        <div className="relative w-auto shadow-xl shadow-gray-600 rounded-lg">
-                            {isImage ? (
-                                <>
-                                    <Hint label={filename} asChild side="top">
-                                        <Image
-                                            src={imageData}
-                                            width={width}
-                                            height={height}
-                                            alt="Preview"
-                                            className="w-auto h-36 object-contain rounded-md bg-gray-100 border-4 border-solid border-gray-300/100"
-                                        />
-                                    </Hint>
-                                </>
-                            ) : (
-                                <Hint label={filename} side="top">
+        <>
+            <div className="py-2 px-4 bg-white border-t flex flex-col items-center gap-2 lg:gap-4 w-full sm:overflow-auto">
+                {imageData && (
+                    <div className="relative w-full h-full">
+                        <div className="flex flex-col items-start">
+                            <div className="relative w-auto shadow-xl shadow-gray-600 rounded-lg">
+                                {isImage ? (
                                     <>
-                                        <FileIcon
-                                            className="h-28 w-28 rounded-md bg-gray-100 border-4 border-solid border-gray-300/100 fill-sky-400"
-                                            type={fileType}
-                                        />
+                                        <Hint
+                                            label={filename}
+                                            asChild
+                                            side="top"
+                                        >
+                                            <Image
+                                                src={imageData}
+                                                width={250}
+                                                height={250}
+                                                alt="Preview"
+                                                className="w-auto h-36 object-contain rounded-md bg-gray-100 border-4 border-solid border-gray-300/100"
+                                            />
+                                        </Hint>
                                     </>
-                                </Hint>
-                            )}
+                                ) : (
+                                    <Hint label={filename} side="top">
+                                        <>
+                                            <FileIcon
+                                                className="h-28 w-28 rounded-md bg-gray-100 border-4 border-solid border-gray-300/100 fill-sky-400"
+                                                type={fileType}
+                                            />
+                                        </>
+                                    </Hint>
+                                )}
 
-                            <Hint label="Delete file" asChild>
-                                <div className="absolute -top-2 -right-1 cursor-pointer rounded-md p-0.5 bg-gray-400/75 shadow-lg shadow-gray-600">
-                                    <IoTrash
-                                        className="text-red-700 hover:text-red-800 transition"
-                                        onClick={handleDelete}
-                                    />
-                                </div>
-                            </Hint>
+                                <Hint label="Delete file" asChild>
+                                    <div className="absolute -top-2 -right-1 cursor-pointer rounded-md p-0.5 bg-gray-400/75 shadow-lg shadow-gray-600">
+                                        <IoTrash
+                                            className="text-red-700 hover:text-red-800 transition"
+                                            onClick={handleDelete}
+                                        />
+                                    </div>
+                                </Hint>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-            <div className="flex items-center gap-2 lg:gap-4 w-full mt-2 lg:mt-0">
-                <CldUploadButton
-                    options={{ maxFiles: 1, maxFileSize: 5 * 1024 * 1024 }}
-                    onSuccess={handleUpload}
-                    uploadPreset="cjsiejih"
-                >
-                    <HiPhoto
-                        size={30}
-                        className="text-sky-500 hover:text-sky-600 transition"
-                    />
-                </CldUploadButton>
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="flex items-center gap-2 lg:gap-4 w-full"
-                >
+                )}
+                <div className="flex items-center gap-2 lg:gap-4 w-full mt-2 lg:mt-0">
                     {imageData ? (
-                        <MessageInput
-                            id="message"
-                            type="input"
-                            register={register}
-                            errors={errors}
-                            placeholder="Write a message"
+                        <HiPhoto
+                            size={30}
+                            className="text-gray-400 transition opacity-80 cursor-default"
                         />
                     ) : (
-                        <MessageInput
-                            id="message"
-                            type="input"
-                            register={register}
-                            errors={errors}
-                            required
-                            placeholder="Write a message"
-                        />
+                        <CldUploadButton
+                            options={{
+                                maxFiles: 1,
+                                maxFileSize: 5 * 1024 * 1024,
+                            }}
+                            onSuccess={handleUpload}
+                            uploadPreset="cjsiejih"
+                        >
+                            <HiPhoto
+                                size={30}
+                                className="text-sky-500 hover:text-sky-600 transition"
+                            />
+                        </CldUploadButton>
                     )}
-                    <ButtonSend
-                        size={18}
-                        className="text-white"
-                        type="submit"
-                    />
-                </form>
+
+                    <form
+                        onSubmit={handleSubmit(onSubmit)}
+                        className="flex items-center gap-2 lg:gap-4 w-full"
+                    >
+                        {imageData ? (
+                            <MessageInput
+                                id="message"
+                                type="input"
+                                register={register}
+                                errors={errors}
+                                placeholder="Write a message"
+                            />
+                        ) : (
+                            <MessageInput
+                                id="message"
+                                type="input"
+                                register={register}
+                                errors={errors}
+                                required
+                                placeholder="Write a message"
+                            />
+                        )}
+                        <ButtonSend
+                            size={18}
+                            className="text-white"
+                            type="submit"
+                        />
+                    </form>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 

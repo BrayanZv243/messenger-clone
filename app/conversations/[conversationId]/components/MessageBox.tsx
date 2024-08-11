@@ -1,9 +1,14 @@
-"use client";
-
 import Avatar from "@/app/components/Avatar";
 import { FullMessageType } from "@/app/types";
 import clsx from "clsx";
-import { format } from "date-fns";
+import {
+    differenceInDays,
+    format,
+    formatDistanceToNow,
+    isSameMinute,
+    isToday,
+    isYesterday,
+} from "date-fns";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
@@ -20,9 +25,10 @@ import ProfileDrawerUser from "./ProfileDrawerUser";
 interface MessageBoxProps {
     data: FullMessageType;
     isLast: boolean;
+    previousMessage: Date | null;
 }
 
-const MessageBox = ({ isLast, data }: MessageBoxProps) => {
+const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
     const session = useSession();
     const [imageModalOpen, setImageModalOpen] = useState(false);
     const [isFormatImage, setIsFormatImage] = useState(false);
@@ -32,6 +38,11 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     const [fileSize, setFileSize] = useState({ size: 0, sizeType: "" });
     const [drawerOpen, setDrawerOpen] = useState(false);
 
+    // Determine if the message is from the same minute as the previous message
+    const isSameMinuteAsPrevious =
+        previousMessage &&
+        isSameMinute(new Date(data.createdAt), previousMessage);
+
     const isOwn = session?.data?.user?.email === data.sender.email;
     const seenList = (data.seen || [])
         .filter((user) => user.email !== data?.sender?.email)
@@ -40,12 +51,12 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
 
     const container = clsx(`flex gap-3 p-4`, isOwn && "justify-end");
     const avatar = clsx(
-        "cursor-pointer hover:opacity-50 transition-opacity",
+        "cursor-pointer hover:opacity-50 transition-opacity -mb-4",
         isOwn && "order-2"
     );
     const body = clsx("flex flex-col gap-0 -mt-[16px]", isOwn && "items-end");
     const message = clsx(
-        "relative text-sm overflow-hidden w-fit h-auto",
+        "relative text-sm overflow-hidden w-fit h-auto -mb-2",
         (isOwn && data.body) || (fileType && !isFormatImage)
             ? "bg-sky-500 text-gray-100"
             : !isFormatImage && "bg-gray-100",
@@ -133,6 +144,27 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
         document.body.removeChild(link);
     };
 
+    const formatMessageDate = (date: Date, previousDate: Date | null) => {
+        const now = new Date();
+        const daysDifference = differenceInDays(now, date);
+
+        if (previousDate && isSameMinute(date, previousDate)) {
+            return ""; // Devuelve vacío si el mensaje es del mismo minuto que el anterior
+        }
+
+        if (isToday(date)) {
+            return `today at ${format(date, "p")}`;
+        } else if (isYesterday(date)) {
+            return `yesterday at ${format(date, "p")}`;
+        } else if (daysDifference > 1) {
+            return `${format(date, "dd/MM/yyyy")} at ${format(date, "p")}`;
+        } else {
+            return `${formatDistanceToNow(date, {
+                addSuffix: true,
+            })} at ${format(date, "p")}`;
+        }
+    };
+
     return (
         <>
             <ProfileDrawerUser
@@ -142,18 +174,27 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                 onClose={() => setDrawerOpen(false)}
             />
             <div className={container} suppressHydrationWarning>
-                <div className={avatar} onClick={() => setDrawerOpen(true)}>
-                    <Avatar user={data.sender} />
-                </div>
-                <div className={body}>
-                    <div className="flex items-center gap-1">
-                        <div className="text-sm text-gray-500">
-                            {data.sender.name}
-                        </div>
-                        <div className="text-xs text-gray-400">
-                            {format(new Date(data.createdAt), "p")}
-                        </div>
+                {!isSameMinuteAsPrevious ? (
+                    <div className={avatar} onClick={() => setDrawerOpen(true)}>
+                        <Avatar user={data.sender} />
                     </div>
+                ) : (
+                    <div className="rounded-full h-11 w-11 -mt-9"></div>
+                )}
+                <div className={body}>
+                    {!isSameMinuteAsPrevious && (
+                        <div className="flex items-center gap-1">
+                            <div className="text-md text-gray-500 mt-4">
+                                {data.sender.name}
+                            </div>
+                            <div className="text-xs text-gray-400 mt-5">
+                                {formatMessageDate(
+                                    new Date(data.createdAt),
+                                    previousMessage
+                                )}
+                            </div>
+                        </div>
+                    )}
                     <div className={message}>
                         {isFormatImage && (
                             <>
