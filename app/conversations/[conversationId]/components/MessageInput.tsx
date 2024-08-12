@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
 import { TextareaAutosize } from "@mui/material";
 
@@ -11,6 +11,7 @@ interface MessageInputProps {
     required?: boolean;
     maxLength?: number;
     errors: FieldErrors;
+    resetCharCount: boolean;
     register: UseFormRegister<FieldValues>;
 }
 
@@ -20,7 +21,7 @@ const MessageInput = ({
     type,
     required,
     maxLength,
-
+    resetCharCount,
     register,
 }: MessageInputProps) => {
     const [charCount, setCharCount] = useState(0);
@@ -33,6 +34,12 @@ const MessageInput = ({
         setCharCount(value.length);
         setShowWarning(maxLength ? value.length >= maxLength : false);
     };
+
+    useEffect(() => {
+        if (resetCharCount) {
+            setCharCount(0); // Resetear el contador de caracteres
+        }
+    }, [resetCharCount]);
 
     const handleKeyDown = (
         event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>

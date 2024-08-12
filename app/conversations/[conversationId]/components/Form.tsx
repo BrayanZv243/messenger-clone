@@ -25,6 +25,7 @@ const Form = () => {
     const [isImage, setIsImage] = useState(false);
     const [fileType, setFileType] = useState<FileType>("generic");
     const [filename, setFilename] = useState("");
+    const [resetCharCount, setResetCharCount] = useState(false);
 
     const {
         register,
@@ -104,6 +105,8 @@ const Form = () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
         };
     });
+
+    const handleResetCharCount = () => {};
 
     return (
         <>
@@ -185,6 +188,7 @@ const Form = () => {
                                 type="textarea"
                                 maxLength={1000}
                                 register={register}
+                                resetCharCount={resetCharCount}
                                 errors={errors}
                                 placeholder="Write a message"
                             />
@@ -195,11 +199,15 @@ const Form = () => {
                                 maxLength={1000}
                                 register={register}
                                 errors={errors}
+                                resetCharCount={resetCharCount}
                                 required
                                 placeholder="Write a message"
                             />
                         )}
-                        <div className="mb-6">
+                        <div
+                            className="mb-6"
+                            onClick={() => setResetCharCount(true)}
+                        >
                             <ButtonSend
                                 size={18}
                                 className="text-white"
