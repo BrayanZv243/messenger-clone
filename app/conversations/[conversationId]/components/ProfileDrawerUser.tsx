@@ -90,7 +90,11 @@ const ProfileDrawerUser = ({
                                                     <div className="mb-2">
                                                         <Avatar user={user} />
                                                     </div>
-                                                    <div>{title}</div>
+
+                                                    <div>
+                                                        {title}{" "}
+                                                        {isOwn && "(You)"}
+                                                    </div>
                                                     <div className="text-sm text-gray-500">
                                                         {statusText}
                                                     </div>
