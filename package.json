@@ -39,6 +39,7 @@
         "react-select": "^5.8.0"
     },
     "devDependencies": {
+        "@types/autosize": "^4.0.3",
         "@types/bcrypt": "^5.0.2",
         "@types/lodash": "^4.17.7",
         "@types/node": "^20",

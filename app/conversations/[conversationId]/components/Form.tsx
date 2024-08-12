@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useConversation from "@/app/hooks/useConversation";
 import axios from "axios";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
@@ -25,8 +25,6 @@ const Form = () => {
     const [isImage, setIsImage] = useState(false);
     const [fileType, setFileType] = useState<FileType>("generic");
     const [filename, setFilename] = useState("");
-    const [width, setWidth] = useState(0);
-    const [height, setHeight] = useState(0);
 
     const {
         register,
@@ -41,7 +39,6 @@ const Form = () => {
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         setValue("message", "", { shouldValidate: true });
-
         if (imageData) {
             axios.post("/api/messages", {
                 image: imageData,
@@ -66,24 +63,7 @@ const Form = () => {
 
         setFilename(truncateName);
         setFileType(format as FileType);
-        setWidth(result?.info.width);
-        setHeight(result?.info.height);
         setImageData(result?.info?.secure_url);
-        setIsImage(is_Image(format));
-    };
-
-    const handleUploadDragNDrop = (result: any) => {
-        const format = result?.format || result?.path.split(".")[1];
-        const truncateName: string = truncateFileName(
-            result?.original_filename,
-            format
-        );
-
-        setFilename(truncateName);
-        setFileType(format as FileType);
-        setWidth(result?.width);
-        setHeight(result?.height);
-        setImageData(result?.secure_url);
         setIsImage(is_Image(format));
     };
 
@@ -124,6 +104,7 @@ const Form = () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
         };
     });
+
     return (
         <>
             <div className="py-2 px-4 bg-white border-t flex flex-col items-center gap-2 lg:gap-4 w-full sm:overflow-auto">
@@ -170,12 +151,14 @@ const Form = () => {
                         </div>
                     </div>
                 )}
-                <div className="flex items-center gap-2 lg:gap-4 w-full mt-2 lg:mt-0">
+                <div className="container flex items-end gap-2 lg:gap-4 w-full -mt-2 lg:mt-0 ">
                     {imageData ? (
-                        <HiPhoto
-                            size={30}
-                            className="text-gray-400 transition opacity-80 cursor-default"
-                        />
+                        <div className="mt-4">
+                            <HiPhoto
+                                size={30}
+                                className="text-gray-400 transition opacity-80 cursor-default "
+                            />
+                        </div>
                     ) : (
                         <CldUploadButton
                             options={{
@@ -187,19 +170,20 @@ const Form = () => {
                         >
                             <HiPhoto
                                 size={30}
-                                className="text-sky-500 hover:text-sky-600 transition"
+                                className="text-sky-500 hover:text-sky-600 transition mb-6"
                             />
                         </CldUploadButton>
                     )}
 
                     <form
                         onSubmit={handleSubmit(onSubmit)}
-                        className="flex items-center gap-2 lg:gap-4 w-full"
+                        className="container flex items-end gap-2 lg:gap-4 w-full"
                     >
                         {imageData ? (
                             <MessageInput
                                 id="message"
-                                type="input"
+                                type="textarea"
+                                maxLength={1000}
                                 register={register}
                                 errors={errors}
                                 placeholder="Write a message"
@@ -207,18 +191,22 @@ const Form = () => {
                         ) : (
                             <MessageInput
                                 id="message"
-                                type="input"
+                                type="textarea"
+                                maxLength={1000}
                                 register={register}
                                 errors={errors}
                                 required
                                 placeholder="Write a message"
                             />
                         )}
-                        <ButtonSend
-                            size={18}
-                            className="text-white"
-                            type="submit"
-                        />
+                        <div className="mb-6">
+                            <ButtonSend
+                                size={18}
+                                className="text-white"
+                                type="submit"
+                                id="btn-send"
+                            />
+                        </div>
                     </form>
                 </div>
             </div>
