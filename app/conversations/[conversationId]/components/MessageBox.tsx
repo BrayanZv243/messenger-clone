@@ -57,7 +57,7 @@ const MessageBox = ({ isLast, data, previousMessageDate }: MessageBoxProps) => {
     const avatar = clsx(isOwn && "order-2");
     const body = clsx("flex flex-col gap-0 -mt-[16px]", isOwn && "items-end");
     const message = clsx(
-        " text-sm overflow-hidden w-fit h-auto -mb-2",
+        "relative text-sm overflow-hidden w-fit h-auto -mb-2",
         (isOwn && data.body) || (fileType && !isFormatImage)
             ? "bg-sky-500 text-gray-100"
             : !isFormatImage && "bg-gray-100",
