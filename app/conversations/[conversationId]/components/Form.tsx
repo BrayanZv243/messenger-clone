@@ -21,7 +21,7 @@ import { FileType } from "@/app/components/FileIcon";
 const Form = () => {
     const { conversationId } = useConversation();
 
-    const [imageData, setImageData] = useState<string | null>(null);
+    const [fileData, setFileData] = useState<string | null>(null);
     const [isImage, setIsImage] = useState(false);
     const [fileType, setFileType] = useState<FileType>("generic");
     const [filename, setFilename] = useState("");
@@ -45,12 +45,12 @@ const Form = () => {
 
     const onSubmit: SubmitHandler<FieldValues> = (data) => {
         setValue("message", "", { shouldValidate: true });
-        if (imageData) {
+        if (fileData) {
             axios.post("/api/messages", {
-                image: imageData,
+                image: fileData,
                 conversationId,
             });
-            setImageData(null);
+            setFileData(null);
         }
         if (data.message) {
             axios.post("/api/messages", {
@@ -69,7 +69,7 @@ const Form = () => {
 
         setFilename(truncateName);
         setFileType(format as FileType);
-        setImageData(result?.info?.secure_url);
+        setFileData(result?.info?.secure_url);
         setIsImage(is_Image(format));
         const textArea = document.querySelector("#message") as HTMLElement;
         textArea.focus();
@@ -86,9 +86,9 @@ const Form = () => {
     };
 
     const handleDelete = () => {
-        const publicId = extractPublicIdFromUrl(imageData!);
+        const publicId = extractPublicIdFromUrl(fileData!);
         deleteImage(publicId);
-        setImageData(null);
+        setFileData(null);
     };
 
     const extractPublicIdFromUrl = (url: string) => {
@@ -99,7 +99,7 @@ const Form = () => {
 
     useEffect(() => {
         const handleBeforeUnload = (event: any) => {
-            if (imageData) {
+            if (fileData) {
                 handleDelete();
                 event.preventDefault();
                 event.returnValue = "";
@@ -117,7 +117,7 @@ const Form = () => {
         <>
             {isClient && (
                 <div className="py-2 px-4 bg-white border-t flex flex-col items-center gap-2 lg:gap-4 w-full sm:overflow-auto">
-                    {imageData && (
+                    {fileData && (
                         <div className="relative w-full h-full">
                             <div className="flex flex-col items-start">
                                 <div className="relative w-auto shadow-xl shadow-gray-600 rounded-lg">
@@ -129,7 +129,7 @@ const Form = () => {
                                                 side="top"
                                             >
                                                 <Image
-                                                    src={imageData}
+                                                    src={fileData}
                                                     width={250}
                                                     height={250}
                                                     alt="Preview"
@@ -161,7 +161,7 @@ const Form = () => {
                         </div>
                     )}
                     <div className="container flex items-end gap-2 lg:gap-4 w-full -mt-2 lg:mt-0 ">
-                        {imageData ? (
+                        {fileData ? (
                             <div>
                                 <HiPhoto
                                     size={30}
@@ -188,7 +188,7 @@ const Form = () => {
                             onSubmit={handleSubmit(onSubmit)}
                             className="container flex items-end gap-2 lg:gap-4 w-full"
                         >
-                            {imageData ? (
+                            {fileData ? (
                                 <MessageInput
                                     id="message"
                                     type="textarea"
