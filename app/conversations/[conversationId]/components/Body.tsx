@@ -38,13 +38,12 @@ const Body = ({ initialMessages }: BodyProps) => {
         const scrollPosition = localStorage.getItem(conversationId) || "0";
         currentRef?.scrollTo({
             top: parseFloat(scrollPosition),
-            behavior: "smooth",
         });
 
         return () => {
             currentRef?.removeEventListener("scroll", handleScroll);
         };
-    }, [conversationId]);
+    }, [conversationId, session, messages]);
 
     useEffect(() => {
         axios.post(`/api/conversations/${conversationId}/seen`);

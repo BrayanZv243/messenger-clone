@@ -66,6 +66,8 @@ const Form = () => {
         setFileType(format as FileType);
         setImageData(result?.info?.secure_url);
         setIsImage(is_Image(format));
+        const textArea = document.querySelector("#message") as HTMLElement;
+        textArea.focus();
     };
 
     const deleteImage = async (publicId: string) => {
@@ -105,8 +107,6 @@ const Form = () => {
             window.removeEventListener("beforeunload", handleBeforeUnload);
         };
     });
-
-    const handleResetCharCount = () => {};
 
     return (
         <>
@@ -156,10 +156,10 @@ const Form = () => {
                 )}
                 <div className="container flex items-end gap-2 lg:gap-4 w-full -mt-2 lg:mt-0 ">
                     {imageData ? (
-                        <div className="mt-4">
+                        <div>
                             <HiPhoto
                                 size={30}
-                                className="text-gray-400 transition opacity-80 cursor-default "
+                                className="text-gray-400 transition opacity-80 cursor-default mb-6"
                             />
                         </div>
                     ) : (

@@ -49,10 +49,10 @@ const MessageInput = ({
             event.preventDefault();
             const form = event.currentTarget.closest("form");
             if (form?.requestSubmit) {
-                let submitButton = form.querySelector(
+                const submitButton = form.querySelector(
                     "#btn-send"
                 ) as HTMLElement;
-                let textArea = form.querySelector("#" + id) as HTMLElement;
+                const textArea = form.querySelector("#" + id) as HTMLElement;
                 if (submitButton) {
                     submitButton.focus();
                     submitButton.click();
