@@ -25,7 +25,11 @@ const UserAvatarDefault = ({ name, isGroup }: UserProps) => {
                 )}
                 style={{ backgroundColor }}
             >
-                {initials}
+                {initials.length < 2 ? (
+                    <p className="ml-0.5">{initials}</p>
+                ) : (
+                    <>{initials}</>
+                )}
             </div>
         </div>
     );
