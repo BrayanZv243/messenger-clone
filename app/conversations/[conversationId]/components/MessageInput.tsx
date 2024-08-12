@@ -37,7 +37,7 @@ const MessageInput = ({
 
     useEffect(() => {
         if (resetCharCount) {
-            setCharCount(0); // Resetear el contador de caracteres
+            setCharCount(0);
         }
     }, [resetCharCount]);
 
@@ -45,18 +45,21 @@ const MessageInput = ({
         event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>
     ) => {
         if (event.key === "Enter" && !event.shiftKey) {
-            setCharCount(0);
             event.preventDefault();
             const form = event.currentTarget.closest("form");
             if (form?.requestSubmit) {
                 const submitButton = form.querySelector(
                     "#btn-send"
                 ) as HTMLElement;
-                const textArea = form.querySelector("#" + id) as HTMLElement;
                 if (submitButton) {
+                    const textArea = form.querySelector(
+                        "#" + id
+                    ) as HTMLElement;
+
                     submitButton.focus();
                     submitButton.click();
                     textArea.focus();
+                    setCharCount(0);
                 }
             }
         }

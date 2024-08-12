@@ -26,6 +26,11 @@ const Form = () => {
     const [fileType, setFileType] = useState<FileType>("generic");
     const [filename, setFilename] = useState("");
     const [resetCharCount, setResetCharCount] = useState(false);
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     const {
         register,
@@ -110,114 +115,116 @@ const Form = () => {
 
     return (
         <>
-            <div className="py-2 px-4 bg-white border-t flex flex-col items-center gap-2 lg:gap-4 w-full sm:overflow-auto">
-                {imageData && (
-                    <div className="relative w-full h-full">
-                        <div className="flex flex-col items-start">
-                            <div className="relative w-auto shadow-xl shadow-gray-600 rounded-lg">
-                                {isImage ? (
-                                    <>
-                                        <Hint
-                                            label={filename}
-                                            asChild
-                                            side="top"
-                                        >
-                                            <Image
-                                                src={imageData}
-                                                width={250}
-                                                height={250}
-                                                alt="Preview"
-                                                className="w-auto h-36 object-contain rounded-md bg-gray-100 border-4 border-solid border-gray-300/100"
-                                            />
-                                        </Hint>
-                                    </>
-                                ) : (
-                                    <Hint label={filename} side="top">
+            {isClient && (
+                <div className="py-2 px-4 bg-white border-t flex flex-col items-center gap-2 lg:gap-4 w-full sm:overflow-auto">
+                    {imageData && (
+                        <div className="relative w-full h-full">
+                            <div className="flex flex-col items-start">
+                                <div className="relative w-auto shadow-xl shadow-gray-600 rounded-lg">
+                                    {isImage ? (
                                         <>
-                                            <FileIcon
-                                                className="h-28 w-28 rounded-md bg-gray-100 border-4 border-solid border-gray-300/100 fill-sky-400"
-                                                type={fileType}
-                                            />
+                                            <Hint
+                                                label={filename}
+                                                asChild
+                                                side="top"
+                                            >
+                                                <Image
+                                                    src={imageData}
+                                                    width={250}
+                                                    height={250}
+                                                    alt="Preview"
+                                                    className="w-auto h-36 object-contain rounded-md bg-gray-100 border-4 border-solid border-gray-300/100"
+                                                />
+                                            </Hint>
                                         </>
-                                    </Hint>
-                                )}
+                                    ) : (
+                                        <Hint label={filename} side="top">
+                                            <>
+                                                <FileIcon
+                                                    className="h-28 w-28 rounded-md bg-gray-100 border-4 border-solid border-gray-300/100 fill-sky-400"
+                                                    type={fileType}
+                                                />
+                                            </>
+                                        </Hint>
+                                    )}
 
-                                <Hint label="Delete file" asChild>
-                                    <div className="absolute -top-2 -right-1 cursor-pointer rounded-md p-0.5 bg-gray-400/75 shadow-lg shadow-gray-600">
-                                        <IoTrash
-                                            className="text-red-700 hover:text-red-800 transition"
-                                            onClick={handleDelete}
-                                        />
-                                    </div>
-                                </Hint>
+                                    <Hint label="Delete file" asChild>
+                                        <div className="absolute -top-2 -right-1 cursor-pointer rounded-md p-0.5 bg-gray-400/75 shadow-lg shadow-gray-600">
+                                            <IoTrash
+                                                className="text-red-700 hover:text-red-800 transition"
+                                                onClick={handleDelete}
+                                            />
+                                        </div>
+                                    </Hint>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                )}
-                <div className="container flex items-end gap-2 lg:gap-4 w-full -mt-2 lg:mt-0 ">
-                    {imageData ? (
-                        <div>
-                            <HiPhoto
-                                size={30}
-                                className="text-gray-400 transition opacity-80 cursor-default mb-6"
-                            />
-                        </div>
-                    ) : (
-                        <CldUploadButton
-                            options={{
-                                maxFiles: 1,
-                                maxFileSize: 5 * 1024 * 1024,
-                            }}
-                            onSuccess={handleUpload}
-                            uploadPreset="cjsiejih"
-                        >
-                            <HiPhoto
-                                size={30}
-                                className="text-sky-500 hover:text-sky-600 transition mb-6"
-                            />
-                        </CldUploadButton>
                     )}
-
-                    <form
-                        onSubmit={handleSubmit(onSubmit)}
-                        className="container flex items-end gap-2 lg:gap-4 w-full"
-                    >
+                    <div className="container flex items-end gap-2 lg:gap-4 w-full -mt-2 lg:mt-0 ">
                         {imageData ? (
-                            <MessageInput
-                                id="message"
-                                type="textarea"
-                                maxLength={1000}
-                                register={register}
-                                resetCharCount={resetCharCount}
-                                errors={errors}
-                                placeholder="Write a message"
-                            />
+                            <div>
+                                <HiPhoto
+                                    size={30}
+                                    className="text-gray-400 transition opacity-80 cursor-default mb-6"
+                                />
+                            </div>
                         ) : (
-                            <MessageInput
-                                id="message"
-                                type="textarea"
-                                maxLength={1000}
-                                register={register}
-                                errors={errors}
-                                resetCharCount={resetCharCount}
-                                required
-                                placeholder="Write a message"
-                            />
+                            <CldUploadButton
+                                options={{
+                                    maxFiles: 1,
+                                    maxFileSize: 5 * 1024 * 1024,
+                                }}
+                                onSuccess={handleUpload}
+                                uploadPreset="cjsiejih"
+                            >
+                                <HiPhoto
+                                    size={30}
+                                    className="text-sky-500 hover:text-sky-600 transition mb-6"
+                                />
+                            </CldUploadButton>
                         )}
-                        <div
-                            className="mb-6"
-                            onClick={() => setResetCharCount(true)}
+
+                        <form
+                            onSubmit={handleSubmit(onSubmit)}
+                            className="container flex items-end gap-2 lg:gap-4 w-full"
                         >
-                            <ButtonSend
-                                size={18}
-                                className="text-white"
-                                type="submit"
-                                id="btn-send"
-                            />
-                        </div>
-                    </form>
+                            {imageData ? (
+                                <MessageInput
+                                    id="message"
+                                    type="textarea"
+                                    maxLength={1000}
+                                    register={register}
+                                    resetCharCount={resetCharCount}
+                                    errors={errors}
+                                    placeholder="Write a message"
+                                />
+                            ) : (
+                                <MessageInput
+                                    id="message"
+                                    type="textarea"
+                                    maxLength={1000}
+                                    register={register}
+                                    errors={errors}
+                                    resetCharCount={resetCharCount}
+                                    required
+                                    placeholder="Write a message"
+                                />
+                            )}
+                            <div
+                                className="mb-6"
+                                onClick={() => setResetCharCount(true)}
+                            >
+                                <ButtonSend
+                                    size={18}
+                                    className="text-white"
+                                    type="submit"
+                                    id="btn-send"
+                                />
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            )}
         </>
     );
 };
