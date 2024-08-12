@@ -3,9 +3,9 @@ import { FullMessageType } from "@/app/types";
 import clsx from "clsx";
 import {
     differenceInDays,
+    differenceInMinutes,
     format,
     formatDistanceToNow,
-    isSameMinute,
     isToday,
     isYesterday,
 } from "date-fns";
@@ -25,10 +25,13 @@ import ProfileDrawerUser from "./ProfileDrawerUser";
 interface MessageBoxProps {
     data: FullMessageType;
     isLast: boolean;
-    previousMessage: Date | null;
+    previousMessageDate: Date | null;
 }
 
-const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
+const MessageBox = ({ isLast, data, previousMessageDate }: MessageBoxProps) => {
+    // MINUTES RANGE WITHIN INTERVAL
+    const RANGE_MINUTES = 5;
+
     const session = useSession();
     const [imageModalOpen, setImageModalOpen] = useState(false);
     const [isFormatImage, setIsFormatImage] = useState(false);
@@ -38,10 +41,11 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
     const [fileSize, setFileSize] = useState({ size: 0, sizeType: "" });
     const [drawerOpen, setDrawerOpen] = useState(false);
 
-    // Determine if the message is from the same minute as the previous message
-    const isSameMinuteAsPrevious =
-        previousMessage &&
-        isSameMinute(new Date(data.createdAt), previousMessage);
+    // Determine if the message is from the range minutes (RANGE_MINUTES) as the previous message
+    const isWithinInterval =
+        previousMessageDate &&
+        differenceInMinutes(new Date(data.createdAt), previousMessageDate) <=
+            RANGE_MINUTES;
 
     const isOwn = session?.data?.user?.email === data.sender.email;
     const seenList = (data.seen || [])
@@ -50,13 +54,10 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
         .join(", ");
 
     const container = clsx(`flex gap-3 p-4`, isOwn && "justify-end");
-    const avatar = clsx(
-        "cursor-pointer hover:opacity-50 transition-opacity -mb-4",
-        isOwn && "order-2"
-    );
+    const avatar = clsx(isOwn && "order-2");
     const body = clsx("flex flex-col gap-0 -mt-[16px]", isOwn && "items-end");
     const message = clsx(
-        "relative text-sm overflow-hidden w-fit h-auto -mb-2",
+        " text-sm overflow-hidden w-fit h-auto -mb-2",
         (isOwn && data.body) || (fileType && !isFormatImage)
             ? "bg-sky-500 text-gray-100"
             : !isFormatImage && "bg-gray-100",
@@ -148,7 +149,7 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
         const now = new Date();
         const daysDifference = differenceInDays(now, date);
 
-        if (previousDate && isSameMinute(date, previousDate)) {
+        if (previousDate && isWithinInterval) {
             return ""; // Devuelve vacío si el mensaje es del mismo minuto que el anterior
         }
 
@@ -174,15 +175,28 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
                 onClose={() => setDrawerOpen(false)}
             />
             <div className={container} suppressHydrationWarning>
-                {!isSameMinuteAsPrevious ? (
-                    <div className={avatar} onClick={() => setDrawerOpen(true)}>
+                {!isWithinInterval ? (
+                    <div
+                        className={clsx(
+                            avatar,
+                            "rounded-full h-11 w-11 cursor-pointer hover:opacity-50 transition-opacity"
+                        )}
+                        onClick={() => setDrawerOpen(true)}
+                    >
                         <Avatar user={data.sender} />
                     </div>
                 ) : (
-                    <div className="rounded-full h-11 w-11 -mt-9"></div>
+                    <div
+                        className={clsx(
+                            avatar,
+                            "w-9 h-9 rounded-full -mt-8 mr-2"
+                        )}
+                    >
+                        <Skeleton />
+                    </div>
                 )}
                 <div className={body}>
-                    {!isSameMinuteAsPrevious && (
+                    {!isWithinInterval && (
                         <div className="flex items-center gap-1">
                             <div className="text-md text-gray-500 mt-4">
                                 {data.sender.name}
@@ -190,12 +204,17 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
                             <div className="text-xs text-gray-400 mt-5">
                                 {formatMessageDate(
                                     new Date(data.createdAt),
-                                    previousMessage
+                                    previousMessageDate
                                 )}
                             </div>
                         </div>
                     )}
-                    <div className={message}>
+                    <div
+                        className={clsx(
+                            message,
+                            " break-words rounded-xl max-w-60 lg:max-w-sm md:max-w-sm xl:max-w-xl 2xl:max-w-2xl"
+                        )}
+                    >
                         {isFormatImage && (
                             <>
                                 <ImageModal

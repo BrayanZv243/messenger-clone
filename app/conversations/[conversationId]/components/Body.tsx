@@ -112,7 +112,7 @@ const Body = ({ initialMessages }: BodyProps) => {
                         isLast={i === messages.length - 1}
                         key={message.id}
                         data={message}
-                        previousMessage={previousDate}
+                        previousMessageDate={previousDate}
                     />
                 );
             })}
