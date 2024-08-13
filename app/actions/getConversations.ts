@@ -29,7 +29,7 @@ const getConversations = async (): Promise<FullConversationType[]> => {
                 },
             });
 
-        return conversations;
+        return conversations || [];
     } catch (error) {
         return [];
     }

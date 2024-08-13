@@ -20,7 +20,7 @@ const getUsers = async (): Promise<User[]> => {
             },
         });
 
-        return users;
+        return users || [];
     } catch (error) {
         return [];
     }

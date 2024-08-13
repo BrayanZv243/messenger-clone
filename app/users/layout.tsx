@@ -13,7 +13,7 @@ const UserContent = async () => {
     return <UserList items={users} />;
 };
 
-export default async function UsersLayout({
+export default function UsersLayout({
     children,
 }: {
     children: React.ReactNode;
