@@ -20,7 +20,7 @@ import FileIcon, {
     truncateFileName,
 } from "@/app/components/FileIcon";
 import { FaDownload } from "react-icons/fa";
-import ProfileDrawerUser from "./ProfileDrawerUser";
+import ProfileDrawer from "./ProfileDrawer";
 
 interface MessageBoxProps {
     data: FullMessageType;
@@ -193,7 +193,7 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
     return (
         <>
             <>
-                <ProfileDrawerUser
+                <ProfileDrawer
                     user={data.sender}
                     isOwn={isOwn}
                     isOpen={drawerOpen}

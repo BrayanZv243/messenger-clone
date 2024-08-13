@@ -10,6 +10,7 @@ import ProfileDrawer from "./ProfileDrawer";
 import { useSession } from "next-auth/react";
 import AvatarGroup from "@/app/components/AvatarGroup";
 import { Skeleton } from "@/components/ui/skeleton";
+import useActiveList from "@/app/hooks/useActiveList";
 
 interface HeaderProps {
     conversation: Conversation & {
@@ -21,11 +22,13 @@ const Header = ({ conversation }: HeaderProps) => {
     const otherUser = useOtherUser(conversation);
     const [drawerOpen, setDrawerOpen] = useState(false);
     const session = useSession();
+    const { members } = useActiveList();
+    const isActive = members.indexOf(otherUser?.email!) !== -1;
 
     const statusText = useMemo(() => {
         if (conversation.isGroup) return `${conversation.users.length} members`;
 
-        return "Active";
+        return isActive ? "Active" : "Offline";
     }, [conversation]);
 
     if (!session.data) return <HeaderSkeleton />;
