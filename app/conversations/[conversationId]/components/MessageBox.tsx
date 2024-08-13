@@ -24,11 +24,11 @@ import ProfileDrawerUser from "./ProfileDrawerUser";
 
 interface MessageBoxProps {
     data: FullMessageType;
+    previousMessage: FullMessageType | null;
     isLast: boolean;
-    previousMessageDate: Date | null;
 }
 
-const MessageBox = ({ isLast, data, previousMessageDate }: MessageBoxProps) => {
+const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
     // MINUTES RANGE WITHIN INTERVAL
     const RANGE_MINUTES = 5;
 
@@ -40,12 +40,34 @@ const MessageBox = ({ isLast, data, previousMessageDate }: MessageBoxProps) => {
     const [fullFileName, setFullFileName] = useState("");
     const [fileSize, setFileSize] = useState({ size: 0, sizeType: "" });
     const [drawerOpen, setDrawerOpen] = useState(false);
+    const [isWithinInterval, setIsWithinInterval] = useState(false);
+    const [isSameSender, setIsSameSender] = useState(false);
+    const [isClient, setIsClient] = useState(false);
 
-    // Determine if the message is from the range minutes (RANGE_MINUTES) as the previous message
-    const isWithinInterval =
-        previousMessageDate &&
-        differenceInMinutes(new Date(data.createdAt), previousMessageDate) <=
-            RANGE_MINUTES;
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
+    useEffect(() => {
+        const isSameSender =
+            previousMessage &&
+            previousMessage.sender.email === data.sender.email;
+        setIsSameSender(!!isSameSender);
+
+        // Only isWithinInterval could be true WHETHER IS THE SAME SENDER, OTHERWISE HAS TO BE FALSE.
+        if (isSameSender) {
+            // Determine if the message is from the range minutes (RANGE_MINUTES) as the previous message
+            const isWithinInterval =
+                previousMessage?.createdAt &&
+                differenceInMinutes(
+                    new Date(data.createdAt),
+                    previousMessage.createdAt
+                ) <= RANGE_MINUTES;
+            setIsWithinInterval(!!isWithinInterval);
+        } else {
+            setIsWithinInterval(false);
+        }
+    }, [data, previousMessage]);
 
     const isOwn = session?.data?.user?.email === data.sender.email;
     const seenList = (data.seen || [])
@@ -145,14 +167,16 @@ const MessageBox = ({ isLast, data, previousMessageDate }: MessageBoxProps) => {
         document.body.removeChild(link);
     };
 
-    const formatMessageDate = (date: Date, previousDate: Date | null) => {
+    const formatMessageDate = (
+        date: Date,
+        previousDate: Date | null | undefined
+    ) => {
         const now = new Date();
         const daysDifference = differenceInDays(now, date);
 
         if (previousDate && isWithinInterval) {
-            return ""; // Devuelve vacío si el mensaje es del mismo minuto que el anterior
+            return "";
         }
-
         if (isToday(date)) {
             return `today at ${format(date, "p")}`;
         } else if (isYesterday(date)) {
@@ -168,111 +192,119 @@ const MessageBox = ({ isLast, data, previousMessageDate }: MessageBoxProps) => {
 
     return (
         <>
-            <ProfileDrawerUser
-                user={data.sender}
-                isOwn={isOwn}
-                isOpen={drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-            />
-            <div className={container} suppressHydrationWarning>
-                {!isWithinInterval ? (
-                    <div
-                        className={clsx(
-                            avatar,
-                            "rounded-full h-11 w-11 cursor-pointer hover:opacity-50 transition-opacity"
-                        )}
-                        onClick={() => setDrawerOpen(true)}
-                    >
-                        <Avatar user={data.sender} />
-                    </div>
-                ) : (
-                    <div
-                        className={clsx(
-                            avatar,
-                            "w-9 h-9 rounded-full -mt-8 mr-2"
-                        )}
-                    >
-                        <Skeleton />
-                    </div>
-                )}
-                <div className={body}>
-                    {!isWithinInterval && (
-                        <div className="flex items-center gap-1">
-                            <div className="text-md text-gray-500 mt-4">
-                                {data.sender.name}
-                            </div>
-                            <div className="text-xs text-gray-400 mt-5">
-                                {formatMessageDate(
-                                    new Date(data.createdAt),
-                                    previousMessageDate
+            {isClient && (
+                <>
+                    <ProfileDrawerUser
+                        user={data.sender}
+                        isOwn={isOwn}
+                        isOpen={drawerOpen}
+                        onClose={() => setDrawerOpen(false)}
+                    />
+                    <div className={container} suppressHydrationWarning>
+                        {!isWithinInterval || !isSameSender ? (
+                            <div
+                                className={clsx(
+                                    avatar,
+                                    "rounded-full h-11 w-11 cursor-pointer hover:opacity-50 transition-opacity"
                                 )}
+                                onClick={() => setDrawerOpen(true)}
+                            >
+                                <Avatar user={data.sender} />
                             </div>
+                        ) : (
+                            <div
+                                className={clsx(
+                                    avatar,
+                                    "w-9 h-9 rounded-full -mt-8 mr-2"
+                                )}
+                            >
+                                <Skeleton />
+                            </div>
+                        )}
+                        <div className={body}>
+                            {!isWithinInterval && (
+                                <div className="flex items-center gap-1">
+                                    <div className="text-md text-gray-500 mt-4">
+                                        {data.sender.name}
+                                    </div>
+                                    <div className="text-xs text-gray-400 mt-5">
+                                        {formatMessageDate(
+                                            new Date(data.createdAt),
+                                            previousMessage?.createdAt
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                            <div
+                                className={clsx(
+                                    message,
+                                    " break-words rounded-xl max-w-60 lg:max-w-sm md:max-w-sm xl:max-w-xl 2xl:max-w-2xl"
+                                )}
+                            >
+                                {isFormatImage && (
+                                    <>
+                                        <ImageModal
+                                            src={data.image}
+                                            isOpen={imageModalOpen}
+                                            onClose={() =>
+                                                setImageModalOpen(false)
+                                            }
+                                        />
+                                        <Image
+                                            onClick={() =>
+                                                setImageModalOpen(true)
+                                            }
+                                            alt="Image"
+                                            height={1920}
+                                            width={1080}
+                                            src={data.image!}
+                                            className="w-full object-contain max-h-80 cursor-pointer hover:scale-125 transition translate sm:max-w-sm md:max-w-sm lg:max-w-sm xl:max-w-sm 2xl:max-w-2xl"
+                                        />
+                                        <div onClick={handleDownload}>
+                                            <div className="absolute bottom-2 right-2 bg-gray-200 cursor-pointer rounded-md p-0.5 opacity-60 hover:opacity-100 transition-opacity">
+                                                <FaDownload fill="black" />
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                                {fileType && !isFormatImage && (
+                                    <>
+                                        <div
+                                            onClick={handleDownload}
+                                            className="cursor-pointer"
+                                        >
+                                            <div className="grid grid-cols-3 grid-rows-3 w-60 md:w-72 lg:w-80 h-24">
+                                                <div className="row-span-3 justify-center ">
+                                                    <FileIcon
+                                                        type={fileType}
+                                                        className="w-full h-full cursor-pointer p-2"
+                                                    />
+                                                </div>
+                                                <div className="mt-auto mb-2 col-span-2 row-span-2">
+                                                    <p className="mr-2 text-sm mt-2 break-words font-semibold leading-2">
+                                                        {fullFileName}
+                                                    </p>
+                                                </div>
+                                                <div className="col-span-2 row-span-3 mt-2 text-sm ">
+                                                    <p className="text-xs text-gray-200 mb-auto">
+                                                        {fileType.toUpperCase()}{" "}
+                                                        • {fileSize.size}{" "}
+                                                        {fileSize.sizeType}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                                {data.body}
+                            </div>
+                            {isLast && isOwn && seenList.length > 0 && (
+                                <div className="relative mt-2 text-xs font-light text-gray-500">{`Seen by ${seenList}`}</div>
+                            )}
                         </div>
-                    )}
-                    <div
-                        className={clsx(
-                            message,
-                            " break-words rounded-xl max-w-60 lg:max-w-sm md:max-w-sm xl:max-w-xl 2xl:max-w-2xl"
-                        )}
-                    >
-                        {isFormatImage && (
-                            <>
-                                <ImageModal
-                                    src={data.image}
-                                    isOpen={imageModalOpen}
-                                    onClose={() => setImageModalOpen(false)}
-                                />
-                                <Image
-                                    onClick={() => setImageModalOpen(true)}
-                                    alt="Image"
-                                    height={1920}
-                                    width={1080}
-                                    src={data.image!}
-                                    className="w-full object-contain max-h-80 cursor-pointer hover:scale-125 transition translate sm:max-w-sm md:max-w-sm lg:max-w-sm xl:max-w-sm 2xl:max-w-2xl"
-                                />
-                                <div onClick={handleDownload}>
-                                    <div className="absolute bottom-2 right-2 bg-gray-200 cursor-pointer rounded-md p-0.5 opacity-60 hover:opacity-100 transition-opacity">
-                                        <FaDownload fill="black" />
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                        {fileType && !isFormatImage && (
-                            <>
-                                <div
-                                    onClick={handleDownload}
-                                    className="cursor-pointer"
-                                >
-                                    <div className="grid grid-cols-3 grid-rows-3 w-60 md:w-72 lg:w-80 h-24">
-                                        <div className="row-span-3 justify-center ">
-                                            <FileIcon
-                                                type={fileType}
-                                                className="w-full h-full cursor-pointer p-2"
-                                            />
-                                        </div>
-                                        <div className="mt-auto mb-2 col-span-2 row-span-2">
-                                            <p className="mr-2 text-sm mt-2 break-words font-semibold leading-2">
-                                                {fullFileName}
-                                            </p>
-                                        </div>
-                                        <div className="col-span-2 row-span-3 mt-2 text-sm ">
-                                            <p className="text-xs text-gray-200 mb-auto">
-                                                {fileType.toUpperCase()} •{" "}
-                                                {fileSize.size}{" "}
-                                                {fileSize.sizeType}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                        {data.body}
                     </div>
-                    {isLast && isOwn && seenList.length > 0 && (
-                        <div className="text-xs font-light text-gray-500">{`Seen by ${seenList}`}</div>
-                    )}
-                </div>
-            </div>
+                </>
+            )}
         </>
     );
 };

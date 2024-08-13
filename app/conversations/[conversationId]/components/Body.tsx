@@ -21,6 +21,11 @@ const Body = ({ initialMessages }: BodyProps) => {
     const topRef = useRef<HTMLDivElement>(null);
 
     const { conversationId } = useConversation();
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -87,36 +92,37 @@ const Body = ({ initialMessages }: BodyProps) => {
 
     // Use a separate effect to ensure scroll is updated after messages change
     useEffect(() => {
-        if (bottomRef.current) {
+        if (bottomRef.current && topRef.current) {
             bottomRef.current.scrollIntoView();
+            topRef.current.scrollIntoView();
         }
     }, [messages]);
 
     if (!session.data) return <BodyMessagesSkeleton />;
 
     return (
-        <div
-            className="flex-1 overflow-y-auto py-3"
-            ref={topRef}
-            suppressHydrationWarning
-        >
-            {messages.map((message, i) => {
-                const previousMessage = messages[i - 1];
-                const previousDate = previousMessage
-                    ? new Date(previousMessage.createdAt)
-                    : null;
-
-                return (
-                    <MessageBox
-                        isLast={i === messages.length - 1}
-                        key={message.id}
-                        data={message}
-                        previousMessageDate={previousDate}
-                    />
-                );
-            })}
-            <div className="pt-2" ref={bottomRef} />
-        </div>
+        <>
+            {isClient && (
+                <div
+                    className="flex-1 overflow-y-auto"
+                    ref={topRef}
+                    suppressHydrationWarning
+                >
+                    {messages.map((message, i) => {
+                        const previousMessage = messages[i - 1];
+                        return (
+                            <MessageBox
+                                isLast={i === messages.length - 1}
+                                key={message.id}
+                                data={message}
+                                previousMessage={previousMessage}
+                            />
+                        );
+                    })}
+                    <div className="pt-2" ref={bottomRef} />
+                </div>
+            )}
+        </>
     );
 };
 

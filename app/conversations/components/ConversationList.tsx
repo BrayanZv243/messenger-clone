@@ -9,7 +9,6 @@ import { MdOutlineGroupAdd } from "react-icons/md";
 import ConversationBox, { ConversationBoxSkeleton } from "./ConversationBox";
 import { Hint } from "@/app/components/Hint";
 import { useSession } from "next-auth/react";
-import Loading from "../[conversationId]/components/Loading";
 import GroupChatModal from "./GroupChatModal";
 import { User } from "@prisma/client";
 import { Skeleton } from "@/components/ui/skeleton";
