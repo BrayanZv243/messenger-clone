@@ -42,11 +42,6 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [isWithinInterval, setIsWithinInterval] = useState(false);
     const [isSameSender, setIsSameSender] = useState(false);
-    const [isClient, setIsClient] = useState(false);
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
 
     useEffect(() => {
         const isSameSender =

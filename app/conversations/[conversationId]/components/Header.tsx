@@ -78,7 +78,10 @@ const Header = ({ conversation }: HeaderProps) => {
 
 export const HeaderSkeleton = () => {
     return (
-        <div className="bg-white w-full flex border-b-[1px] sm:px-4 py-3 px-4 lg:px-6 justify-between items-center shadow-sm">
+        <div
+            suppressHydrationWarning
+            className="bg-white w-full flex border-b-[1px] sm:px-4 py-3 px-4 lg:px-6 justify-between items-center shadow-sm"
+        >
             <div className="flex gap-3 items-center cursor-pointer w-full gap-x-4">
                 <div className="lg:hidden bg-gray-200 w-12 h-8 rounded-lg animate-pulse">
                     <Skeleton />

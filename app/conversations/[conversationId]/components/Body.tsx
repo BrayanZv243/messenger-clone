@@ -18,37 +18,35 @@ const Body = ({ initialMessages }: BodyProps) => {
     const [messages, setMessages] =
         useState<FullMessageType[]>(initialMessages);
     const bottomRef = useRef<HTMLDivElement>(null);
-    const topRef = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const { conversationId } = useConversation();
-    const [isClient, setIsClient] = useState(false);
-
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    const [renderComplete, setRenderComplete] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
-            if (topRef.current) {
+            if (bottomRef.current) {
                 localStorage.setItem(
                     conversationId,
-                    topRef.current.scrollTop.toString()
+                    bottomRef.current.scrollTop.toString()
                 );
             }
         };
 
-        const currentRef = topRef.current;
+        const currentRef = bottomRef.current;
         currentRef?.addEventListener("scroll", handleScroll);
 
         const scrollPosition = localStorage.getItem(conversationId) || "0";
         currentRef?.scrollTo({
             top: parseFloat(scrollPosition),
+            behavior: "smooth",
         });
 
+        // Cleanup del evento
         return () => {
             currentRef?.removeEventListener("scroll", handleScroll);
         };
-    }, [conversationId, session, messages]);
+    }, [bottomRef, conversationId, renderComplete]);
 
     useEffect(() => {
         axios.post(`/api/conversations/${conversationId}/seen`);
@@ -90,24 +88,44 @@ const Body = ({ initialMessages }: BodyProps) => {
         };
     }, [conversationId]);
 
-    // Use a separate effect to ensure scroll is updated after messages change
     useEffect(() => {
-        if (bottomRef.current && topRef.current) {
-            bottomRef.current.scrollIntoView();
-            topRef.current.scrollIntoView();
-        }
+        if (!containerRef.current) return;
+
+        const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === "childList") {
+                    const messageBoxes =
+                        containerRef?.current!.querySelectorAll(
+                            "[data-message-id]"
+                        );
+                    if (messageBoxes.length === messages.length) {
+                        setRenderComplete(true);
+                        observer.disconnect();
+                    }
+                }
+            }
+        });
+
+        observer.observe(containerRef.current, {
+            childList: true,
+            subtree: true,
+        });
+
+        return () => {
+            observer.disconnect();
+        };
     }, [messages]);
 
     if (!session.data) return <BodyMessagesSkeleton />;
 
     return (
         <>
-            {isClient && (
-                <div
-                    className="flex-1 overflow-y-auto"
-                    ref={topRef}
-                    suppressHydrationWarning
-                >
+            <div
+                className="flex-1 overflow-y-auto"
+                ref={bottomRef}
+                suppressHydrationWarning
+            >
+                <div ref={containerRef}>
                     {messages.map((message, i) => {
                         const previousMessage = messages[i - 1];
                         return (
@@ -116,12 +134,13 @@ const Body = ({ initialMessages }: BodyProps) => {
                                 key={message.id}
                                 data={message}
                                 previousMessage={previousMessage}
+                                data-message-id={message.id}
                             />
                         );
                     })}
-                    <div className="pt-2" ref={bottomRef} />
                 </div>
-            )}
+                <div className="pt-2" />
+            </div>
         </>
     );
 };
