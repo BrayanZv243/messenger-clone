@@ -46,7 +46,7 @@ const ConversationId = ({ params }: { params: IParams }) => {
     );
 };
 
-export const LayoutConversationSkeleton: FC = () => {
+const LayoutConversationSkeleton: FC = () => {
     return (
         <>
             <HeaderSkeleton />
