@@ -28,7 +28,7 @@ export default function UsersLayout({
     );
 }
 
-export const LayoutSkeleton = () => {
+const LayoutSkeleton = () => {
     return (
         <>
             <SidebarSkeleton />

@@ -30,7 +30,7 @@ export default function ConversationsLayout({
     );
 }
 
-export const LayoutSkeleton = () => {
+const LayoutSkeleton = () => {
     return (
         <>
             <SidebarSkeleton />
