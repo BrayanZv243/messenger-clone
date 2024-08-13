@@ -67,7 +67,7 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
     const isOwn = session?.data?.user?.email === data.sender.email;
     const seenList = (data.seen || [])
         .filter((user) => user.email !== data?.sender?.email)
-        .map((user) => user.name)
+        .map((user) => user.name || "")
         .join(", ");
 
     const container = clsx(`flex gap-3 p-4`, isOwn && "justify-end");
@@ -219,7 +219,7 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
                         {!isWithinInterval && (
                             <div className="flex items-center gap-1">
                                 <div className="text-md text-gray-500 mt-4">
-                                    {data.sender.name}
+                                    {data.sender.name || ""}
                                 </div>
                                 <div className="text-xs text-gray-400 mt-5">
                                     {formatMessageDate(

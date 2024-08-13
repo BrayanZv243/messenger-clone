@@ -43,7 +43,7 @@ const UserBox = ({ data }: UserBoxProps) => {
                     <div className="focus:outline-none">
                         <div className="flex justify-between items-center mb-1">
                             <p className="text-sm font-medium text-gray-900">
-                                {data.name}
+                                {data.name || ""}
                             </p>
                         </div>
                     </div>

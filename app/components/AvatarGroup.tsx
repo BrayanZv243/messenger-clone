@@ -27,7 +27,10 @@ const AvatarGroup = ({ users = [] }: AvatarGroupPops) => {
                     {user?.image ? (
                         <Image alt="Avatar" fill src={user.image} />
                     ) : (
-                        <UserAvatarDefault name={user.name!} isGroup={true} />
+                        <UserAvatarDefault
+                            name={user.name || ""}
+                            isGroup={true}
+                        />
                     )}
                 </div>
             ))}

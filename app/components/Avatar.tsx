@@ -25,7 +25,7 @@ const Avatar = ({ user }: AvatarProps) => {
                     />
                 ) : (
                     <>
-                        <UserAvatarDefault name={user.name!} />
+                        <UserAvatarDefault name={user.name || ""} />
                         {"xd"}
                     </>
                 )}

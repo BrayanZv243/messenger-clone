@@ -9,7 +9,7 @@ interface UserProps {
     isGroup?: boolean;
 }
 
-const UserAvatarDefault = ({ name, isGroup }: UserProps) => {
+const UserAvatarDefault = ({ name = "", isGroup }: UserProps) => {
     const { backgroundColor, initials } = useMemo(
         () => getInitialsColor(name),
         [name]

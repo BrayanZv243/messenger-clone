@@ -32,7 +32,7 @@ const ProfileDrawerUser = ({
         return format(new Date(user.createdAt), "PP");
     }, [user.createdAt]);
 
-    const title = user.name;
+    const title = user.name || "";
     const { members } = useActiveList();
     const isActive = members.indexOf(user.email!) !== -1;
 

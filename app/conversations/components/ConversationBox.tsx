@@ -72,7 +72,7 @@ const ConversationBox = ({ data, selected }: ConversationBoxProps) => {
                 <div className="focus:outline-none">
                     <div className="flex justify-between mb-0">
                         <p className="truncate w-full text-md font-medium text-gray-900">
-                            {data.name || otherUser.name}
+                            {data.name || otherUser.name || ""}
                         </p>
                         {lastMessage?.createdAt && (
                             <div className="text-xs text-gray-400 font-light font-mono w-20 flex justify-end">
