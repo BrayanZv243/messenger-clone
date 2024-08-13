@@ -1,16 +1,19 @@
 import { User } from "@prisma/client";
-import Sidebar, { SidebarSkeleton } from "../components/sidebar/Sidebar";
-import getUsers from "../actions/getUsers";
-import UserList, { UserListSkeleton } from "./components/UserList";
+import Sidebar, { SidebarSkeleton } from "../../components/sidebar/Sidebar";
+import getUsers from "../../actions/getUsers";
+import UserList, { UserListSkeleton } from "./UserList";
 import { Suspense } from "react";
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const UserContent = async () => {
-    await delay(2000);
-
-    const users: User[] = await getUsers();
-    return <UserList items={users} />;
+    try {
+        const users: User[] = await getUsers();
+        return <UserList items={users} />;
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return <div>Error loading users</div>;
+    }
 };
 
 export default function UsersLayout({
