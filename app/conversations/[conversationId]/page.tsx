@@ -4,7 +4,7 @@ import EmptyState from "@/app/components/EmptyState";
 import Header, { HeaderSkeleton } from "./components/Header";
 import Body, { BodyMessagesSkeleton } from "./components/Body";
 import Form, { FormSkeleton } from "./components/Form";
-import { Suspense } from "react";
+import { FC, Suspense } from "react";
 
 interface IParams {
     conversationId: string;
@@ -46,7 +46,7 @@ const ConversationId = async ({ params }: { params: IParams }) => {
     );
 };
 
-export const LayoutConversationSkeleton = () => {
+export const LayoutConversationSkeleton: FC = () => {
     return (
         <>
             <HeaderSkeleton />

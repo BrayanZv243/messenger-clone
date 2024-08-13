@@ -29,7 +29,7 @@ const Header = ({ conversation }: HeaderProps) => {
         if (conversation.isGroup) return `${conversation.users.length} members`;
 
         return isActive ? "Active" : "Offline";
-    }, [conversation]);
+    }, [conversation, isActive]);
 
     if (!session.data) return <HeaderSkeleton />;
 
