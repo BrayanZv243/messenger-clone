@@ -21,7 +21,7 @@ const Avatar = ({ user }: AvatarProps) => {
                         alt="Avatar"
                         src={user?.image}
                         fill
-                        className="object-cover bg-sky-200/50"
+                        className="object-contain bg-sky-200/50"
                     />
                 ) : (
                     <>
