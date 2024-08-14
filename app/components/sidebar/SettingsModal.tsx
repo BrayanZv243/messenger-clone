@@ -89,7 +89,7 @@ const SettingsModal = ({
                                 <Image
                                     width="48"
                                     height="48"
-                                    className="rounded-full object-cover h-14 w-14"
+                                    className="rounded-full object-contain h-14 w-14"
                                     src={image || currentUser?.image}
                                     alt="Avatar"
                                 />
