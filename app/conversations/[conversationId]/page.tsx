@@ -9,7 +9,6 @@ import { FC, Suspense } from "react";
 interface IParams {
     conversationId: string;
 }
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const HeaderConversationContent = async ({ params }: { params: IParams }) => {
     const conversation = await getConversationById(params.conversationId);

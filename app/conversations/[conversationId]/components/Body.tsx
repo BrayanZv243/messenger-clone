@@ -116,6 +116,10 @@ const Body = ({ initialMessages }: BodyProps) => {
         };
     }, [messages]);
 
+    useEffect(() => {
+        bottomRef.current?.scrollTo({ top: bottomRef.current.scrollHeight });
+    }, [renderComplete, messages]);
+
     if (!session.data) return <BodyMessagesSkeleton />;
 
     return (
