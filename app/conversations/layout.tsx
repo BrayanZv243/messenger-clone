@@ -8,8 +8,6 @@ import getUsers from "../actions/getUsers";
 import { User } from "@prisma/client";
 import React, { Suspense } from "react";
 
-const ConversationsContent = async () => {};
-
 export default async function ConversationsLayout({
     children,
 }: {
