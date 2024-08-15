@@ -14,24 +14,32 @@ import { User } from "@prisma/client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { pusherClient } from "@/app/libs/pusher";
 import { find } from "lodash";
+import SettingsModal from "@/app/components/sidebar/SettingsModal";
+import Avatar from "@/app/components/Avatar";
 
 interface ConversationListProps {
     initialItems: FullConversationType[];
     users: User[];
+    currentUser: User | null;
 }
 
-const ConversationList = ({ initialItems, users }: ConversationListProps) => {
+const ConversationList = ({
+    initialItems,
+    users,
+    currentUser,
+}: ConversationListProps) => {
     const [items, setItems] = useState(initialItems);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const session = useSession();
+    const [isOpenSettings, setIsOpenSettings] = useState(false);
 
-    const router = useRouter();
+    const session = useSession();
 
     const { conversationId, isOpen } = useConversation();
 
     const pusherKey = useMemo(() => {
         return session.data?.user?.email;
     }, [session.data?.user?.email]);
+    const router = useRouter();
 
     useEffect(() => {
         if (!pusherKey) return;
@@ -86,7 +94,10 @@ const ConversationList = ({ initialItems, users }: ConversationListProps) => {
     }, [pusherKey, conversationId, router]);
 
     if (!session.data) return <ConversationListSkeleton />;
-
+    if (!currentUser) {
+        router.push("/");
+        return;
+    }
     return (
         <>
             <GroupChatModal
@@ -94,6 +105,12 @@ const ConversationList = ({ initialItems, users }: ConversationListProps) => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
             />
+            <SettingsModal
+                currentUser={currentUser}
+                isOpen={isOpenSettings}
+                onClose={() => setIsOpenSettings(false)}
+            />
+
             <aside
                 suppressHydrationWarning
                 className={clsx(
@@ -104,17 +121,39 @@ const ConversationList = ({ initialItems, users }: ConversationListProps) => {
             >
                 <div className="px-5" suppressHydrationWarning>
                     <div className="flex justify-between mb-4 pt-4">
-                        <p className="text-2xl font-bold text-neutral-800">
-                            Messages
-                        </p>
+                        <div className="flex flex-row gap-x-4">
+                            <p className="text-2xl font-bold text-neutral-800">
+                                Messages
+                            </p>
+                            {/* Hint visible only on small screens */}
+                            <div className="block lg:hidden">
+                                <Hint label="Create a group" side="bottom">
+                                    <div
+                                        className="rounded-full p-2 bg-gray-100 text-gray-600 cursor-pointer hover:opacity-75 transition"
+                                        onClick={() => setIsModalOpen(true)}
+                                    >
+                                        <MdOutlineGroupAdd size={20} />
+                                    </div>
+                                </Hint>
+                            </div>
+                        </div>
+
+                        {/* Hint hidden on small screens */}
                         <Hint label="Create a group" side="bottom">
                             <div
-                                className="rounded-full p-2 bg-gray-100 text-gray-600 cursor-pointer hover:opacity-75 transition"
+                                className="rounded-full p-2 bg-gray-100 text-gray-600 cursor-pointer hover:opacity-75 transition hidden lg:block"
                                 onClick={() => setIsModalOpen(true)}
                             >
                                 <MdOutlineGroupAdd size={20} />
                             </div>
                         </Hint>
+
+                        <div
+                            onClick={() => setIsOpenSettings(true)}
+                            className="cursor-pointer hover:opacity-65 transition block lg:hidden"
+                        >
+                            <Avatar user={currentUser} />
+                        </div>
                     </div>
 
                     {items.map((item) => (
