@@ -19,8 +19,8 @@ const UserAvatarDefault = ({ name = "", isGroup }: UserProps) => {
         <div className="flex items-center">
             <div
                 className={clsx(
-                    `w-10 h-10 text-center items-center justify-center rounded-full text-white font-bold`,
-                    !isGroup && "flex text-lg",
+                    `w-11 h-11 text-center items-center justify-center rounded-full text-white font-bold `,
+                    !isGroup && "flex text-xl",
                     isGroup && "text-sm"
                 )}
                 style={{ backgroundColor }}
