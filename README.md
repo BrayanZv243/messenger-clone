@@ -34,6 +34,7 @@ Seamlessly integrates with Google and GitHub for connecting with friends and sig
 Before you begin, ensure you have met the following requirements:
 
 - [Node.js](https://nodejs.org/) and npm installed<br>
+- [Next.js](https://nextjs.org/) the React Framework for the Web<br>
 - [MongoDB](https://www.mongodb.com/) database setup<br>
 - [Pusher](https://pusher.com/) account for real-time messaging<br>
 - [Cloudinary](https://cloudinary.com/) account for multimedia content management<br>
@@ -42,7 +43,7 @@ Before you begin, ensure you have met the following requirements:
 
 1. **Clone the repository**:<br>
    ```sh
-   git clone https://github.com/BrayanZv243/messenger-clone
+   git clone https://github.com/BrayanZv243/messenger-clone.git
    cd messenger
 2. **Install dependencies**:<br>
    ```sh
