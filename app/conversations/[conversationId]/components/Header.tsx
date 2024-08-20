@@ -48,18 +48,23 @@ const Header = ({ conversation }: HeaderProps) => {
                     >
                         <HiChevronLeft size={32} />
                     </Link>
-                    <div className="cursor-pointer hover:opacity-65 transition-opacity duration-300">
-                        {conversation.isGroup ? (
-                            <AvatarGroup users={conversation.users} />
-                        ) : (
-                            <Avatar user={otherUser} />
-                        )}
-                    </div>
+                    <div
+                        className="contents"
+                        onClick={() => setDrawerOpen(true)}
+                    >
+                        <div className="cursor-pointer hover:opacity-65 transition-opacity duration-300">
+                            {conversation.isGroup ? (
+                                <AvatarGroup users={conversation.users} />
+                            ) : (
+                                <Avatar user={otherUser} />
+                            )}
+                        </div>
 
-                    <div className="flex flex-col">
-                        <div>{conversation.name || otherUser.name}</div>
-                        <div className="text-sm font-light text-neutral-500">
-                            {statusText}
+                        <div className="flex flex-col">
+                            <div>{conversation.name || otherUser.name}</div>
+                            <div className="text-sm font-light text-neutral-500">
+                                {statusText}
+                            </div>
                         </div>
                     </div>
                 </div>
