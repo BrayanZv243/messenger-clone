@@ -232,7 +232,7 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
                         <div
                             className={clsx(
                                 message,
-                                " break-words rounded-xl max-w-60 lg:max-w-sm md:max-w-sm xl:max-w-xl 2xl:max-w-2xl"
+                                "break-words rounded-xl max-w-60 lg:max-w-sm md:max-w-sm xl:max-w-xl 2xl:max-w-2xl"
                             )}
                         >
                             {isFormatImage && (
@@ -248,7 +248,7 @@ const MessageBox = ({ isLast, data, previousMessage }: MessageBoxProps) => {
                                         height={1920}
                                         width={1080}
                                         src={data.image!}
-                                        className="w-full object-contain max-h-80 cursor-pointer hover:scale-125 transition translate sm:max-w-sm md:max-w-sm lg:max-w-sm xl:max-w-sm 2xl:max-w-2xl"
+                                        className="w-full object-contain max-h-80 cursor-pointer  transition translate sm:max-w-sm md:max-w-sm lg:max-w-sm xl:max-w-sm 2xl:max-w-2xl"
                                     />
                                     <div onClick={handleDownload}>
                                         <div className="absolute bottom-2 right-2 bg-gray-200 cursor-pointer rounded-md p-0.5 opacity-60 hover:opacity-100 transition-opacity">

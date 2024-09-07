@@ -27,6 +27,7 @@ const Form = () => {
     const [filename, setFilename] = useState("");
     const [resetCharCount, setResetCharCount] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const [keyboardOpen, setKeyboardOpen] = useState(false);
 
     useEffect(() => {
         setIsClient(true);
@@ -113,6 +114,30 @@ const Form = () => {
         };
     });
 
+    useEffect(() => {
+        const handleResize = () => {
+            // Detecta si el teclado está abierto comparando la altura de la ventana
+            const isKeyboardOpen =
+                window.innerHeight < window.outerHeight * 0.7;
+            setKeyboardOpen(isKeyboardOpen);
+
+            console.log(isKeyboardOpen);
+            if (isKeyboardOpen) {
+                // Hacer scroll hacia el input si el teclado está abierto
+                const inputElement = document.getElementById("message");
+                if (inputElement) {
+                    inputElement.scrollIntoView({ behavior: "smooth" });
+                }
+            }
+        };
+
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+            window.removeEventListener("resize", handleResize);
+        };
+    }, []);
+
     return (
         <>
             {isClient && (
@@ -160,7 +185,7 @@ const Form = () => {
                             </div>
                         </div>
                     )}
-                    <div className="container flex items-end gap-2 lg:gap-4 w-full -mt-2 lg:mt-0 ">
+                    <div className="flex justify-between gap-2 lg:gap-4 w-full -mt-2 lg:mt-0">
                         {fileData ? (
                             <div>
                                 <HiPhoto
@@ -186,7 +211,7 @@ const Form = () => {
 
                         <form
                             onSubmit={handleSubmit(onSubmit)}
-                            className="container flex items-end gap-2 lg:gap-4 w-full"
+                            className={`flex items-end gap-2 lg:gap-4 w-full`}
                         >
                             {fileData ? (
                                 <MessageInput
