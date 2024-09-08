@@ -1,12 +1,10 @@
 import getConversations from "../actions/getConversations";
-import Sidebar, { SidebarSkeleton } from "../components/sidebar/Sidebar";
-import ConversationList, {
-    ConversationListSkeleton,
-} from "./components/ConversationList";
+import Sidebar from "../components/sidebar/Sidebar";
+import ConversationList from "./components/ConversationList";
 import { FullConversationType } from "../types";
 import getUsers from "../actions/getUsers";
 import { User } from "@prisma/client";
-import React, { Suspense } from "react";
+import React from "react";
 import getCurrentUser from "../actions/getCurrentUser";
 
 export default async function ConversationsLayout({
@@ -28,24 +26,13 @@ export default async function ConversationsLayout({
     }
 
     return (
-        <Suspense fallback={<LayoutSkeleton />}>
-            <Sidebar>
-                {children}
-                <ConversationList
-                    initialItems={conversations}
-                    users={users}
-                    currentUser={currentUser}
-                />
-            </Sidebar>
-        </Suspense>
+        <Sidebar>
+            {children}
+            <ConversationList
+                initialItems={conversations}
+                users={users}
+                currentUser={currentUser}
+            />
+        </Sidebar>
     );
 }
-
-const LayoutSkeleton = () => {
-    return (
-        <>
-            <SidebarSkeleton />
-            <ConversationListSkeleton />
-        </>
-    );
-};

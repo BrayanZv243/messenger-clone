@@ -9,8 +9,8 @@ import ModalLoading from "./components/Modal-Loading";
 
 const Loading = () => {
     const pathname = usePathname();
-    const isUsers = pathname === "/users";
-    const isConversations = pathname === "/conversations";
+    const isUsers = pathname?.startsWith("/users");
+    const isConversations = pathname?.startsWith("/conversations");
     const none = !isConversations && !isUsers;
 
     return (

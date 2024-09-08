@@ -347,7 +347,7 @@ export const MessageBoxSkeleton = ({ number }: MessageBoxSkeletonProps) => {
                 </div>
                 <div
                     className={clsx(
-                        "w-40 lg:w-80 xl:w-80 animate-pulse rounded-full",
+                        "w-40 md:w-60 lg:w-80 xl:w-80 animate-pulse rounded-full",
                         isOwn ? "bg-sky-500 text-white" : "bg-gray-200"
                     )}
                 >

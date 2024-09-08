@@ -61,7 +61,7 @@ const GroupChatModal = ({ isOpen, users, onClose }: GroupChatModal) => {
                             Create a group chat
                         </h2>
                         <p className="mt-1 text-sm leading-6 text-gray-600">
-                            Creae a chat with more than 2 people.
+                            Create a chat with more than 2 people.
                         </p>
                         <div className="mt-10 flex flex-col gap-y-8">
                             <Input

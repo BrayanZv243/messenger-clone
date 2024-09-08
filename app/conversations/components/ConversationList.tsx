@@ -16,6 +16,7 @@ import { pusherClient } from "@/app/libs/pusher";
 import { find } from "lodash";
 import SettingsModal from "@/app/components/sidebar/SettingsModal";
 import Avatar from "@/app/components/Avatar";
+import useIsMobile from "@/app/hooks/useIsMobile";
 
 interface ConversationListProps {
     initialItems: FullConversationType[];
@@ -31,6 +32,7 @@ const ConversationList = ({
     const [items, setItems] = useState(initialItems);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isOpenSettings, setIsOpenSettings] = useState(false);
+    const isMobile = useIsMobile();
 
     const session = useSession();
 
@@ -93,7 +95,8 @@ const ConversationList = ({
         };
     }, [pusherKey, conversationId, router]);
 
-    if (!session.data) return <ConversationListSkeleton />;
+    if (!isMobile && !session.data) return <ConversationListSkeleton />;
+    console.log(isMobile);
     if (!currentUser) {
         router.push("/");
         return;
@@ -171,7 +174,7 @@ const ConversationList = ({
 
 export const ConversationListSkeleton = () => {
     return (
-        <aside className="w-full fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block border-r border-gray-200">
+        <aside className="hidden w-full fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block border-r border-gray-200">
             <div className="px-5" suppressHydrationWarning>
                 <div className="flex justify-between mb-4 pt-4 gap-x-5">
                     <div className="animate-pulse rounded-lg w-2/4  bg-gray-200">
